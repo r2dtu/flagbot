@@ -51,8 +51,7 @@ module.exports = {
         // Only allow command to be run within 15 minutes of flag races
         const now = Date.now();
         const date = new Date( now );
-        if (true) {
-//        if (validFlagTime( date.getUTCHours() ) && date.getMinutes() < FLAG_RECORD_TIME_LIMIT_MINUTES) {
+        if (validFlagTime( date.getUTCHours() ) && date.getMinutes() < FLAG_RECORD_TIME_LIMIT_MINUTES) {
             var place = parseInt( args[0] );
             var pts = calculateFlagPoints( place );
             if (pts > 0) {
