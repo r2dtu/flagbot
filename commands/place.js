@@ -51,7 +51,8 @@ module.exports = {
         // Only allow command to be run within 15 minutes of flag races
         const now = Date.now();
         const date = new Date( now );
-        if (validFlagTime( date.getUTCHours() ) && date.getMinutes() < FLAG_RECORD_TIME_LIMIT_MINUTES) {
+        if (true) {
+//        if (validFlagTime( date.getUTCHours() ) && date.getMinutes() < FLAG_RECORD_TIME_LIMIT_MINUTES) {
             var place = parseInt( args[0] );
             var pts = calculateFlagPoints( place );
             if (pts > 0) {
@@ -60,18 +61,23 @@ module.exports = {
                 var flagRecords = [];
                 var flagCsvFilename = "flagrecords_" + msg.guild.id + ".csv";
 
+                // Retrieve updated nickname, esp. if his name is bunz
+                let guild = msg.client.guilds.cache.get( msg.guild.id );
+                let member = guild.member( msg.author );
+                let nickname = member ? member.displayName : null;
+
                 // Create record file if it doesn't exist
                 if (!fs.existsSync( flagCsvFilename )) {
                     fs.writeFile( flagCsvFilename, '', function (err) {
                         if (err) throw err;
 
                         var flagRecordsOut = [];
-                        flagRecordsOut.push( [msg.author.id, pts, place] );
+                        flagRecordsOut.push( [now, msg.author.id, nickname, pts, place] );
 
                         // Write out record
                         const ws = fs.createWriteStream( flagCsvFilename );
                         fastcsv.write( flagRecordsOut, 
-                                { headers: ['userId', 'weeklyPoints', 'weeklyPlacements'] } )
+                                { headers: ['timestamp', 'userId', 'nickname', 'weeklyPoints', 'weeklyPlacements'] } )
                                 .pipe( ws );
                     } );
 
@@ -83,28 +89,36 @@ module.exports = {
                             flagRecords.push( data );
                         } )
                         .on( "end", () => {
-                            console.log( flagRecords );
-    
                             // Search for user ID while appending new data to outdata
                             var found = false;
                             var flagRecordsOut = [];
+
                             for (const row of flagRecords) {
-                                console.log( 'row: ' + row );
                                 if (row.userId === msg.author.id) {
                                     // Update score - items stored in CSV are always valid integers
                                     row.weeklyPoints = '' + (parseInt( row.weeklyPoints ) + pts);
+                                    row.nickname = nickname;
+
+                                    // Update timestamp data
+                                    row.timestamp = now;
+
+                                    // Add new placement to record of placements
+                                    row.weeklyPlacements += ("/" + args[0]);
+
+                                    // Push records to out data
                                     flagRecordsOut.push( row );
                                     found = true;
-                                    break;
+
+                                    // Continue pushing the rest of the data - don't break
                                 } else {
                                     flagRecordsOut.push( row );
-                                    // Continue searching
+                                    // Continue searching / pushing data
                                 }
                             }
-    
+
+                            // New entry
                             if (!found) {
-                                var data = [msg.author.id, pts, place];
-                                flagRecordsOut.push( data );
+                                flagRecordsOut.push( [now, msg.author.id, nickname, pts, place] );
                             } else {
                                 // Already done
                             }
@@ -112,7 +126,7 @@ module.exports = {
                             // Write out data back to CSV
                             const ws = fs.createWriteStream( flagCsvFilename );
                             fastcsv.write( flagRecordsOut, 
-                                    { headers: ['userId', 'weeklyPoints', 'weeklyPlacements'] } )
+                                    { headers: ['timestamp', 'userId', 'nickname', 'weeklyPoints', 'weeklyPlacements'] } )
                                     .pipe( ws );
     
                         } );
