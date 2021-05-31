@@ -4,6 +4,9 @@
  */
 const FLAG_RECORD_TIME_LIMIT_MINUTES = 15;
 
+const fastcsv = require('fast-csv');
+const fs = require( 'fs' );
+
 /**
  * @brief Checks that current time is a flag race hour.
  */
@@ -52,6 +55,70 @@ module.exports = {
             var place = parseInt( args[0] );
             var pts = calculateFlagPoints( place );
             if (pts > 0) {
+
+                // @better Use a database for this record stuff
+                var flagRecords = [];
+                var flagCsvFilename = "flagrecords_" + msg.guild.id + ".csv";
+
+                // Create record file if it doesn't exist
+                if (!fs.existsSync( flagCsvFilename )) {
+                    fs.writeFile( flagCsvFilename, '', function (err) {
+                        if (err) throw err;
+
+                        var flagRecordsOut = [];
+                        flagRecordsOut.push( [msg.author.id, pts, place] );
+
+                        // Write out record
+                        const ws = fs.createWriteStream( flagCsvFilename );
+                        fastcsv.write( flagRecordsOut, 
+                                { headers: ['userId', 'weeklyPoints', 'weeklyPlacements'] } )
+                                .pipe( ws );
+                    } );
+
+                } else {
+
+                    // Parse current record file
+                    fastcsv.parseFile( flagCsvFilename, { headers: true } )
+                        .on( "data", data => {
+                            flagRecords.push( data );
+                        } )
+                        .on( "end", () => {
+                            console.log( flagRecords );
+    
+                            // Search for user ID while appending new data to outdata
+                            var found = false;
+                            var flagRecordsOut = [];
+                            for (const row of flagRecords) {
+                                console.log( 'row: ' + row );
+                                if (row.userId === msg.author.id) {
+                                    // Update score - items stored in CSV are always valid integers
+                                    row.weeklyPoints = '' + (parseInt( row.weeklyPoints ) + pts);
+                                    flagRecordsOut.push( row );
+                                    found = true;
+                                    break;
+                                } else {
+                                    flagRecordsOut.push( row );
+                                    // Continue searching
+                                }
+                            }
+    
+                            if (!found) {
+                                var data = [msg.author.id, pts, place];
+                                flagRecordsOut.push( data );
+                            } else {
+                                // Already done
+                            }
+    
+                            // Write out data back to CSV
+                            const ws = fs.createWriteStream( flagCsvFilename );
+                            fastcsv.write( flagRecordsOut, 
+                                    { headers: ['userId', 'weeklyPoints', 'weeklyPlacements'] } )
+                                    .pipe( ws );
+    
+                        } );
+                }
+
+                // Send back user feedback
                 if (place > 0) {
                     msg.channel.send( 'You placed ' + place + ' and earned ' + pts + ' points.' );
                 } else {
