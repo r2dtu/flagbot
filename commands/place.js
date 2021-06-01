@@ -7,58 +7,31 @@ const FLAG_RECORD_TIME_LIMIT_MINUTES = 15;
 const fastcsv = require('fast-csv');
 const fs = require( 'fs' );
 
-/**
- * @brief Checks that current time is a flag race hour.
- */
-var flagUTCTimes = [12, 19, 21, 22, 23];
-function validFlagTime( flagHr ) {
-    return flagUTCTimes.includes( flagHr );
-}
-
-/**
- * @brief Returns the amount of points earned from flag placement.
- */
-function calculateFlagPoints( rank ) {
-    var pts = 0;
-    if (rank == 0) {
-        pts = 10;
-    } else if (rank == 1) {
-        pts = 100;
-    } else if (rank == 2) {
-        pts = 50;
-    } else if (rank == 3) {
-        pts = 40;
-    } else if (rank == 4) {
-        pts = 35;
-    } else if (rank == 5) {
-        pts = 30;
-    } else if (rank > 5 && rank < 21) {
-        pts = 20;
-    } else {
-        console.log( "Invalid flag placement!" );
-    }
-
-    return pts;
-}
+const flagUtils = require( '../utils/flag-utils.js' );
 
 module.exports = {
     name: 'place',
-    aliases: ['p'],
     description: 'Records your most recent flag placement.',
+    aliases: ['p'],
+    usage: '[1-20]',
     guildOnly: true,
     execute( msg, args ) {
 
         // Only allow command to be run within 15 minutes of flag races
         const now = Date.now();
         const date = new Date( now );
-        if (validFlagTime( date.getUTCHours() ) && date.getMinutes() < FLAG_RECORD_TIME_LIMIT_MINUTES) {
-            var place = parseInt( args[0] );
-            var pts = calculateFlagPoints( place );
-            if (pts > 0) {
+        
+        if (flagUtils.validFlagTime( date.getUTCHours() ) && 
+                date.getMinutes() < FLAG_RECORD_TIME_LIMIT_MINUTES) {
+
+            let isNum = /^\d+$/.test( args[0] );
+            let place = parseInt( args[0] );
+            let pts = flagUtils.calculateFlagPoints( place );
+            if (isNum && pts > 0) {
 
                 // @better Use a database for this record stuff
-                var flagRecords = [];
-                var flagCsvFilename = "flagrecords_" + msg.guild.id + ".csv";
+                let flagRecords = [];
+                let flagCsvFilename = "flagrecords_" + msg.guild.id + ".csv";
 
                 // Retrieve updated nickname, esp. if his name is bunz
                 let guild = msg.client.guilds.cache.get( msg.guild.id );
@@ -70,7 +43,7 @@ module.exports = {
                     fs.writeFile( flagCsvFilename, '', function (err) {
                         if (err) throw err;
 
-                        var flagRecordsOut = [];
+                        let flagRecordsOut = [];
                         flagRecordsOut.push( [now, msg.author.id, nickname, pts, place] );
 
                         // Write out record
@@ -89,8 +62,8 @@ module.exports = {
                         } )
                         .on( "end", () => {
                             // Search for user ID while appending new data to outdata
-                            var found = false;
-                            var flagRecordsOut = [];
+                            let found = false;
+                            let flagRecordsOut = [];
 
                             for (const row of flagRecords) {
                                 if (row.userId === msg.author.id) {

@@ -6,22 +6,23 @@ const fastcsv = require( 'fast-csv' );
 
 module.exports = {
     name: 'rank',
-    aliases: ['r'],
     description: 'Returns your current flag rank and points.',
+    aliases: ['r'],
+    usage: ' ',
     guildOnly: true,
     execute( msg, args ) {
 
         try {
             // Parse current record file
-            var flagRecords = [];
-            var flagCsvFilename = "flagrecords_" + msg.guild.id + ".csv";
+            let flagRecords = [];
+            let flagCsvFilename = "flagrecords_" + msg.guild.id + ".csv";
 
             fastcsv.parseFile( flagCsvFilename, { headers: true } )
                 .on( "data", data => {
                     flagRecords.push( data );
                 } )
                 .on( "end", () => {
-                    var data = [];
+                    let data = [];
 
                     // Sort flag records
                     flagRecords.sort( function (a, b) {
@@ -29,8 +30,8 @@ module.exports = {
                     } );
 
                     // Find the user's ranking info
-                    var found = false;
-                    var rank = 1;
+                    let found = false;
+                    let rank = 1;
                     for (const row of flagRecords) {
                         if (row.userId === msg.author.id) {
                             data.push( `**Name:** ${row.nickname}` );
@@ -46,7 +47,7 @@ module.exports = {
                     }
 
                     if (!found) {
-                        data.push( `No ranking data found for ${nickname}` );
+                        data.push( 'No ranking data found.' );
                     } else {
                         // Already formatted response
                     }

@@ -6,15 +6,16 @@ const fastcsv = require( 'fast-csv' );
 
 module.exports = {
     name: 'leaderboard',
-    aliases: ['rankings', 'l', 'leader'],
     description: 'Returns the current top 10 flag leaderboard.',
+    aliases: ['rankings', 'l', 'leader'],
+    usage: ' ',
     guildOnly: true,
     execute( msg, args ) {
 
         try {
             // Parse current record file
-            var flagRecords = [];
-            var flagCsvFilename = "flagrecords_" + msg.guild.id + ".csv";
+            let flagRecords = [];
+            let flagCsvFilename = "flagrecords_" + msg.guild.id + ".csv";
 
             fastcsv.parseFile( flagCsvFilename, { headers: true } )
                 .on( "data", data => {
@@ -27,10 +28,10 @@ module.exports = {
                         return a.weeklyPoints > b.weeklyPoints;
                     } );
 
-                    var data = [];
+                    let data = [];
                     data.push( 'Rank. Name(IGN) - Weekly Points' );
 
-                    var i = 1;
+                    let i = 1;
                     for (const row of flagRecords) {
                         if (i > 10) {
                             break;
