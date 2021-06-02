@@ -2,7 +2,7 @@
  * @file help.js
  * @brief Help command configs
  */
-const { prefix } = require('../config.json');
+const prefix = process.env.PREFIX;
 
 module.exports = {
     name: 'help',
