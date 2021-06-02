@@ -7,7 +7,6 @@ const { flagChannelId, flagRoleId } = require( './flag-settings.json' );
 
 // List out flag race times
 const FlagReminders = new Map();
-FlagReminders.set( 'Dummy Test Flag Reminder', { hr: 14, min: 54 });
 FlagReminders.set( '12pm UTC Flag', { hr: 11, min: 55 });
 FlagReminders.set( '7pm UTC Flag', { hr: 18, min: 55 });
 FlagReminders.set( '9pm UTC Flag', { hr: 20, min: 55 });
