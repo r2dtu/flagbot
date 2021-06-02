@@ -32,8 +32,7 @@ module.exports = {
                     if (false) { // TODO
                     // Check that the timestamp is within the 15min
 //                    if (newData.getLastUpdatedTs() - rowUser.lastupdatedts >
-//                            (EDIT_FLAG_RECORD_TIME_LIMIT_MINUTES * 60 * 1000))
-                    {
+//                            (EDIT_FLAG_RECORD_TIME_LIMIT_MINUTES * 60 * 1000)) {
                         msg.channel.send( `You cannot edit your rankings anytime after ` +
                         `${EDIT_FLAG_RECORD_TIME_LIMIT_MINUTES} minutes since your last ` +
                         `ranking placement input.` );
