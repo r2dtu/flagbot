@@ -3,6 +3,7 @@
  * @brief Rank command configs
  */
 const fastcsv = require( 'fast-csv' );
+const flagUtils = require( '../utils/flag-utils.js' );
 
 let readCb = ( flagRecords, msg, newData ) => {
     let data = [];

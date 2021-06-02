@@ -12,6 +12,10 @@ let readCb = ( flagRecords, msg, newData ) => {
     let flagRecordsOut = [];
     let error = false;
     if (rowUser) {
+        // Add existing data
+        newData.addWeeklyPoints( parseInt( rowUser.weeklyPoints );
+        newData.addWeeklyPlacement( rowUser.weeklyPlacements );
+
         // Ensure that they didn't already put in a score for this current flag race
         if (newData.getLastUpdatedTs() - rowUser.timestamp < 
                     (FLAG_RECORD_TIME_LIMIT_MINUTES * 60 * 1000)) {
@@ -19,9 +23,7 @@ let readCb = ( flagRecords, msg, newData ) => {
             msg.channel.send( 'You already entered a placement for the most recent flag, you troll.' );
         } else {
             // Update score - items stored in CSV are always valid integers
-            newData.addWeeklyPoints( parseInt( rowUser.weeklyPoints )
-                                        + newData.getPlacementPoints() );
-            newData.addWeeklyPlacement( rowUser.weeklyPlacements );
+            newData.addWeeklyPoints( newData.getPlacementPoints() );
             newData.addWeeklyPlacement( newData.getPlacement() );
         }
     } else {
