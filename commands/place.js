@@ -13,7 +13,7 @@ let readCb = ( flagRecords, msg, newData ) => {
     let error = false;
     if (rowUser) {
         // Add existing data
-        newData.addWeeklyPoints( parseInt( rowUser.weeklyPoints );
+        newData.addWeeklyPoints( parseInt( rowUser.weeklyPoints ) );
         newData.addWeeklyPlacement( rowUser.weeklyPlacements );
 
         // Ensure that they didn't already put in a score for this current flag race
