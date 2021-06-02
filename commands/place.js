@@ -13,9 +13,8 @@ let readCb = ( flagRecords, msg, newData ) => {
     let error = false;
     if (rowUser) {
         // Ensure that they didn't already put in a score for this current flag race
-        if (false) { // TODO
-//        if (newData.getLastUpdatedTs() - rowUser.timestamp < 
-//                    (FLAG_RECORD_TIME_LIMIT_MINUTES * 60 * 1000)) {
+        if (newData.getLastUpdatedTs() - rowUser.timestamp < 
+                    (FLAG_RECORD_TIME_LIMIT_MINUTES * 60 * 1000)) {
             error = true;
             msg.channel.send( 'You already entered a placement for the most recent flag, you troll.' );
         } else {
@@ -67,9 +66,8 @@ module.exports = {
         const now = Date.now();
         const date = new Date( now );
 
-        if (true) { // TODO
-//        if (flagUtils.validFlagTime( date.getUTCHours() ) && 
-//                date.getMinutes() < FLAG_RECORD_TIME_LIMIT_MINUTES) {
+        if (flagUtils.validFlagTime( date.getUTCHours() ) && 
+                date.getMinutes() < FLAG_RECORD_TIME_LIMIT_MINUTES) {
             if (flagUtils.isValidRanking( args[0] )) {
                 // Retrieve updated nickname, esp. if his name is bunz
                 let guild = msg.client.guilds.cache.get( msg.guild.id );
