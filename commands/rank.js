@@ -12,6 +12,7 @@ module.exports = {
     guildOnly: true,
     execute( msg, args ) {
 
+console.log( msg.channel.id );
         try {
             // Parse current record file
             let flagRecords = [];

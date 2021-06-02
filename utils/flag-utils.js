@@ -9,7 +9,7 @@
  * @param[in] flagHr hour to check if there's a flag race
  */
 var flagUTCTimes = [12, 19, 21, 22, 23];
-function validFlagTime( flagHr ) {
+const validFlagTime = ( flagHr ) => {
     return flagUTCTimes.includes( flagHr );
 }
 
@@ -18,7 +18,7 @@ function validFlagTime( flagHr ) {
  *
  * @param[in] rank Rank earned in flag race
  */
-function calculateFlagPoints( rank ) {
+const calculateFlagPoints = ( rank ) => {
     let pts = 0;
     if (rank == 0) {
         pts = 10;

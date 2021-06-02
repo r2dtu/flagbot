@@ -8,6 +8,7 @@ const fs = require( 'fs' );
 const Discord = require( 'discord.js' );
 const client = new Discord.Client();
 const { prefix, token } = require( './config.json' );
+const flagReminder = require( './flag-reminders.js' );
 
 // Read in list of commands
 client.commands = new Discord.Collection();
@@ -19,7 +20,8 @@ for (const file of cmdFiles) {
 
 // Ready message after startup
 client.once( 'ready', () => {
-  console.log( 'Ready!' );
+    flagReminder.setSchedules( client );
+    console.log( 'Ready!' );
 } );
 
 // Messages/commands handler

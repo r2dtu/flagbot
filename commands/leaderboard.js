@@ -31,6 +31,7 @@ module.exports = {
                     let ranks = places.map( function( v ) {
                                     return sorted.indexOf( v ) + 1;
                                 } );
+                    ranks.sort( function (a, b) { return a - b; } );
 
                     // Sort flag records
                     flagRecords.sort( function (a, b) {
