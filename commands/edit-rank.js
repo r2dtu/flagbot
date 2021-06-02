@@ -11,7 +11,7 @@ const flagUtils = require( '../utils/flag-utils.js' );
 
 module.exports = {
     name: 'edit-rank',
-    description: 'Replaces the most recent rank recorded with a new placement.',
+    description: 'Replaces the most recent rank recorded with a new placement. Only usable within ' + EDIT_FLAG_RECORD_TIME_LIMIT_MINUTES + ' minutes after using the !place command',
     aliases: ['e', 'edit'],
     usage: '[1-20]',
     guildOnly: true,
