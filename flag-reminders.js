@@ -3,7 +3,9 @@
  * @brief Set up reminders for flag race.
  */
 const cron = require( 'node-cron' );
-const { flagChannelId, flagRoleId } = require( './flag-settings.json' );
+
+const flagChannelId = process.env.flagChannelId;
+const flagRoleId = process.env.flagRoleId;
 
 // List out flag race times
 const FlagReminders = new Map();

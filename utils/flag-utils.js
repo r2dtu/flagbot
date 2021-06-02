@@ -2,8 +2,16 @@
  * @file flag-utils.js
  * @brief Flag race utility functions
  */
-const fastcsv = require('fast-csv');
-const fs = require( 'fs' );
+
+// Connect to Postgres
+const pg = require( 'pg' ).Client;
+const pgClient = new pg({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
+pgClient.connect();
 
 /**
  * @brief Class to hold flag user data.
@@ -88,11 +96,21 @@ const calculateFlagPoints = ( rank ) => {
     return pts;
 };
 
-const findUser = ( flagRecords, userId ) => {
-    for (const row of flagRecords) {
-        if (row.userId === userId) {
-            return row;
-        }
+/**
+ * @brief Returns the user's flag records if exists, null otherwise
+ *
+ * @param[in] userId user discord ID
+ */
+const findUser = ( userData, cb ) => {
+    try {
+        // userid is a unique field (primary key), will only be one
+        pgClient.query( "SELECT * FROM flag_records.delight_flag WHERE userid = $1", [userData.getUserId()])
+            .then( (res) => {
+                console.log( res );
+                cb( res.rows );
+            } );
+    } catch (e) {
+        console.log( "Failed to retrieve data from database. Error: " + e );
     }
     return null;
 };
@@ -103,35 +121,26 @@ const findUser = ( flagRecords, userId ) => {
  *
  * @param[in] guildId Discord server ID
  * @param[in] userData New flag user data to write
- * @param[in] flagRecordsOut Existing flag records
  */
 var headerNames = ['timestamp', 'userId', 'nickname', 'weeklyPoints', 'weeklyPlacements'];
-const writeFlagData = ( guildId, userData, flagRecordsOut ) => {
-    let filename = "flagrecords_" + guildId + ".csv";
-
-    // Convert JSON to array
-    let data = [userData.getLastUpdatedTs(), userData.getUserId(),
-                userData.getNickname(), userData.getWeeklyPoints(),
-                userData.getWeeklyPlacements()];
-    flagRecordsOut.push( data );
-    
-    if (!fs.existsSync( filename )) {
-        fs.writeFile( filename, '', function (err) {
-            if (err) throw err;
-    
-            // Write out record
-            const ws = fs.createWriteStream( filename );
-            fastcsv.write( flagRecordsOut, 
-                    { headers: headerNames } )
-                    .pipe( ws );
-        } );
-    } else {
-        // Write out record
-        const ws = fs.createWriteStream( filename );
-        fastcsv.write( flagRecordsOut, 
-                { headers: headerNames } )
-                .pipe( ws );
-    }
+const writeFlagData = ( guildId, userData ) => {
+    let writeCb = (rows) => {
+        if (rows.length > 0) {
+            pgClient.query( 
+                "UPDATE flag_records.delight_flag SET lastUpdatedTs = $1, nickname = $2, weeklyPoints = $3, weeklyPlacements = $4 WHERE userId = $5",
+                [userData.getLastUpdatedTs(), userData.getNickname(), userData.getWeeklyPoints(), userData.getWeeklyPlacements(), userData.getUserId()] )
+                .then( () => { } );
+        } else {
+            pgClient.query( 
+                "INSERT INTO flag_records.delight_flag " +
+                "(userId, lastUpdatedTs, nickname, weeklyPoints, weeklyPlacements) VALUES " +
+                "($1, $2, $3, $4, $5)",
+                [userData.getUserId(), userData.getLastUpdatedTs(), userData.getNickname(), 
+                 userData.getWeeklyPoints(), userData.getWeeklyPlacements()] )
+                .then( () => { } );
+        }
+    };
+    findUser( userData, writeCb );
 };
 
 /**
@@ -143,16 +152,16 @@ const writeFlagData = ( guildId, userData, flagRecordsOut ) => {
  */
 const parseFlagRecordsFile = ( msg, newData, callback ) => {
     let flagRecords = [];
-    let filename = "flagrecords_" + msg.guild.id + ".csv";
 
     try {
-        fastcsv.parseFile( filename, { headers: true } )
-            .on( "data", data => {
-                flagRecords.push( data );
-            } )
-            .on( "end", () => {
-                callback( flagRecords, msg, newData );
-            } );
+        pgClient.query('SELECT * FROM flag_records.delight_flag', (err, res) => {
+            if (err) throw err;
+            for (let row of res.rows) {
+                flagRecords.push( row );
+            }
+            callback( flagRecords, msg, newData );
+        });
+
         return true;
     } catch (e) {
         console.log( 'File probably does not exist: ' + e );
