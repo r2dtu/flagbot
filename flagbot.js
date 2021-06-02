@@ -1,5 +1,5 @@
 /**
- * @file flagbot-heroku.js
+ * @file flagbot.js
  * @author David Tu
  *
  * @brief Main bot runner.
