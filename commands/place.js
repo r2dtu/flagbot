@@ -17,9 +17,8 @@ module.exports = {
         // Only allow command to be run within 15 minutes of flag races
         const now = Date.now();
         const date = new Date( now );
-        if (true) { // TODO
-//        if (flagUtils.validFlagTime( date.getUTCHours() ) && 
-//                date.getMinutes() < FLAG_RECORD_TIME_LIMIT_MINUTES) {
+        if (flagUtils.validFlagTime( date.getUTCHours() ) && 
+                date.getMinutes() < FLAG_RECORD_TIME_LIMIT_MINUTES) {
             if (flagUtils.isValidRanking( args[0] )) {
                 // Retrieve updated nickname, esp. if his name is bunz
                 let guild = msg.client.guilds.cache.get( msg.guild.id );
@@ -38,10 +37,9 @@ module.exports = {
                         newData.addWeeklyPoints( parseInt( rowUser.weeklypoints ) );
                         newData.addWeeklyPlacement( rowUser.weeklyplacements );
 
-                        if (false) { // TODO
                         // Ensure that they didn't already put in a score for this current flag race
-//                        if (newData.getLastUpdatedTs() - rowUser.lastupdatedts < 
-//                            (FLAG_RECORD_TIME_LIMIT_MINUTES * 60 * 1000)) {
+                        if (newData.getLastUpdatedTs() - rowUser.lastupdatedts < 
+                                (FLAG_RECORD_TIME_LIMIT_MINUTES * 60 * 1000)) {
                             error = true;
                             msg.channel.send( 'You already entered a placement for the most recent flag, you troll.' );
                         } else {

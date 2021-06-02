@@ -29,10 +29,9 @@ module.exports = {
             let readCb = ( rows ) => {
                 let rowUser = (rows.length > 0) ? rows[0] : null;
                 if (rowUser) {
-                    if (false) { // TODO
                     // Check that the timestamp is within the 15min
-//                    if (newData.getLastUpdatedTs() - rowUser.lastupdatedts >
-//                            (EDIT_FLAG_RECORD_TIME_LIMIT_MINUTES * 60 * 1000)) {
+                    if (newData.getLastUpdatedTs() - rowUser.lastupdatedts >
+                            (EDIT_FLAG_RECORD_TIME_LIMIT_MINUTES * 60 * 1000)) {
                         msg.channel.send( `You cannot edit your rankings anytime after ` +
                         `${EDIT_FLAG_RECORD_TIME_LIMIT_MINUTES} minutes since your last ` +
                         `ranking placement input.` );
