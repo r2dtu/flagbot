@@ -24,25 +24,30 @@ module.exports = {
                 .on( "end", () => {
                     let data = [];
 
-                    // Sort flag records
-                    flagRecords.sort( function (a, b) {
-                        return a.weeklyPoints > b.weeklyPoints;
-                    } );
+                    // Grab points and sort to determine rankings (handles ties as well)
+                    let places = flagRecords.map( p => p.weeklyPoints );
+                    let sorted = places.slice().sort( function (a, b) {
+                                     return b - a;
+                                 } );
+                    let ranks = places.map( function( v ) {
+                                    return sorted.indexOf( v ) + 1;
+                                } );
 
                     // Find the user's ranking info
                     let found = false;
-                    let rank = 1;
+                    let idx = 0;
                     for (const row of flagRecords) {
                         if (row.userId === msg.author.id) {
                             data.push( `**Name:** ${row.nickname}` );
-                            data.push( `**Weekly Guild Rank:** ${rank}` );
+                            data.push( `**Weekly Guild Rank:** ${ranks[idx]}` );
                             data.push( `**Weekly Points:** ${row.weeklyPoints}` );
-                            data.push( `**Weekly Placements:** ${row.weeklyPlacements}` );
+                            let placeStr = row.weeklyPlacements.replace(/\//g, ', ');
+                            data.push( `**Weekly Placements:** ${placeStr}` );
                             found = true;
                             break;
                         } else {
                             // Continue searching
-                            rank += 1;
+                            idx += 1;
                         }
                     }
 

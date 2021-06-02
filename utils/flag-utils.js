@@ -1,5 +1,12 @@
 /**
+ * @file flag-utils.js
+ * @brief Flag race utility functions
+ */
+
+/**
  * @brief Checks that current time is a flag race hour.
+ *
+ * @param[in] flagHr hour to check if there's a flag race
  */
 var flagUTCTimes = [12, 19, 21, 22, 23];
 function validFlagTime( flagHr ) {
@@ -8,6 +15,8 @@ function validFlagTime( flagHr ) {
 
 /**
  * @brief Returns the amount of points earned from flag placement.
+ *
+ * @param[in] rank Rank earned in flag race
  */
 function calculateFlagPoints( rank ) {
     let pts = 0;

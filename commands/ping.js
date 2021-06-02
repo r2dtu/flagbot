@@ -1,3 +1,7 @@
+/**
+ * @file ping.js
+ * @brief Ping Pong
+ */
 module.exports = {
     name: 'ping',
     description: 'Ping!',

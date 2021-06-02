@@ -11,21 +11,20 @@ const flagUtils = require( '../utils/flag-utils.js' );
 
 module.exports = {
     name: 'place',
-    description: 'Records your most recent flag placement.',
+    description: 'Records your most recent flag placement (must have finished the race). Use "afk" if you afk\'d or didn\'t finish the race.',
     aliases: ['p'],
-    usage: '[1-20]',
+    usage: '[1-20 / afk]',
     guildOnly: true,
     execute( msg, args ) {
 
         // Only allow command to be run within 15 minutes of flag races
         const now = Date.now();
         const date = new Date( now );
-        
         if (flagUtils.validFlagTime( date.getUTCHours() ) && 
                 date.getMinutes() < FLAG_RECORD_TIME_LIMIT_MINUTES) {
 
-            let isNum = /^\d+$/.test( args[0] );
-            let place = parseInt( args[0] );
+            let isNum = /^\d+$/.test( args[0] ) || (args[0] === 'afk');
+            let place = (args[0] === 'afk') ? 0 : parseInt( args[0] );
             let pts = flagUtils.calculateFlagPoints( place );
             if (isNum && pts > 0) {
 
@@ -75,7 +74,7 @@ module.exports = {
                                     row.timestamp = now;
 
                                     // Add new placement to record of placements
-                                    row.weeklyPlacements += ("/" + args[0]);
+                                    row.weeklyPlacements += ("/" + place);
 
                                     // Push records to out data
                                     flagRecordsOut.push( row );

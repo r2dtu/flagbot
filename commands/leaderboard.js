@@ -23,21 +23,33 @@ module.exports = {
                 } )
                 .on( "end", () => {
 
+                    // Grab points and sort to determine rankings (handles ties as well)
+                    let places = flagRecords.map( p => p.weeklyPoints );
+                    let sorted = places.slice().sort( function (a, b) {
+                                     return b - a;
+                                 } );
+                    let ranks = places.map( function( v ) {
+                                    return sorted.indexOf( v ) + 1;
+                                } );
+
                     // Sort flag records
                     flagRecords.sort( function (a, b) {
-                        return a.weeklyPoints > b.weeklyPoints;
+                        let x = parseInt( a.weeklyPoints );
+                        let y = parseInt( b.weeklyPoints );
+                        return y - x;
                     } );
 
                     let data = [];
                     data.push( 'Rank. Name(IGN) - Weekly Points' );
 
-                    let i = 1;
+                    let i = 0;
                     for (const row of flagRecords) {
-                        if (i > 10) {
+                        if (i >= 10) {
                             break;
                         }
 
-                        data.push( `${i}. ${row.nickname} - ${row.weeklyPoints} points` );
+                        // Handle ties
+                        data.push( `${ranks[i]}. ${row.nickname} - ${row.weeklyPoints} points` );
                         ++i;
                     }
                     msg.channel.send( data, { split: true } );
