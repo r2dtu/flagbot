@@ -12,7 +12,7 @@ module.exports = {
     `placement. Only usable within ${EDIT_FLAG_RECORD_TIME_LIMIT_MINUTES} ` +
     `minutes after using the !place command.`,
     aliases: ['e', 'edit'],
-    usage: '[1-20]',
+    usage: '[1-20 / afk]',
     guildOnly: true,
     execute( msg, args ) {
         const now = Date.now();

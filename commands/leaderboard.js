@@ -25,7 +25,7 @@ const readCb = (flagRecords, msg, userData) => {
     let data = [];
     let totalPoints = places.reduce((a, b) => a + b, 0);
 
-    data.push( `**Total** Guild Weekly Flag Points (recorded): ${totalPoints}` );
+    data.push( `**Total** (recorded) Guild Weekly Flag Points: ${totalPoints}` );
     data.push( '\nRank. Name(IGN) - Weekly Points' );
 
     let i = 0;

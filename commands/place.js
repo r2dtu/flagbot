@@ -8,8 +8,8 @@ const flagUtils = require( '../utils/flag-utils.js' );
 
 module.exports = {
     name: 'place',
-    description: `Records your most recent flag placement (must have finished 
-    the race). Use "afk" if you afk\'d or didn\'t finish the race.`,
+    description: 'Records your most recent flag placement (must have finished ' +
+                 'the race). Use "afk" if you afk\'d or didn\'t finish the race.',
     aliases: ['p'],
     usage: '[1-20 / afk]',
     guildOnly: true,
