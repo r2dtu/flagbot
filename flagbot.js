@@ -36,6 +36,10 @@ client.on( 'message', msg => {
 
     // Ignore bot and unprefixed commands
     if (!msg.content.startsWith( prefix ) || msg.author.bot) return;
+
+    // Ignore commands if they weren't sent in the flag channel
+    if (process.env.restrictFlagChannel &&
+        msg.channel.id != process.env.flagChannelId) return;
   
     // Get rid of prefix and separate arguments passed in
     const args = msg.content.slice( prefix.length ).trim().split(/ +/);
