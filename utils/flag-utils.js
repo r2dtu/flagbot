@@ -14,6 +14,23 @@ const pgClient = new pg({
 pgClient.connect();
 
 /**
+ * @brief String comparison functions.
+ * @{
+ */
+let ciEquals = (a, b) => {
+    return typeof a === 'string' && typeof b === 'string'
+        ? a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0
+        : a === b;
+};
+
+let afkFunc = (afkStr) => {
+    return ciEquals( afkStr, 'afk' )
+              || ciEquals( afkStr, 'out' )
+              || ciEquals( afkStr, 'dnf' );
+};
+/** @} */
+
+/**
  * @brief Class to hold flag user data.
  */
 class FlagUser {
@@ -61,8 +78,8 @@ const validFlagTime = ( flagHr ) => {
  */
 const isValidRanking = ( rankStr ) => {
     let isNum = (/^\d+$/.test( rankStr ) && parseInt( rankStr ) != 0)
-                || (rankStr === 'afk');
-    let place = (rankStr === 'afk') ? 0 : parseInt( rankStr );
+                || afkFunc( rankStr );
+    let place = afkFunc( rankStr ) ? 0 : parseInt( rankStr );
     let pts = calculateFlagPoints( place );
 
     return (isNum && pts > 0);
@@ -169,4 +186,4 @@ const parseFlagRecordsFile = ( msg, newData, callback ) => {
     }
 };
 
-module.exports = { FlagUser, validFlagTime, findUser, isValidRanking, calculateFlagPoints, writeFlagData, parseFlagRecordsFile };
+module.exports = { FlagUser, validFlagTime, findUser, isValidRanking, calculateFlagPoints, writeFlagData, parseFlagRecordsFile, afkFunc };

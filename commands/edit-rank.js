@@ -10,9 +10,10 @@ module.exports = {
     name: 'edit-rank',
     description: `Replaces the most recent rank recorded with a new ` +
     `placement. Only usable within ${EDIT_FLAG_RECORD_TIME_LIMIT_MINUTES} ` +
-    `minutes after using the !place command.`,
+    `minutes after using the !place command. See "!help p" for valid ` + 
+    `placements.`,
     aliases: ['e', 'edit'],
-    usage: '[1-20 / afk]',
+    usage: '[1-20 / afk / out / dnf]',
     guildOnly: true,
     execute( msg, args ) {
         const now = Date.now();
@@ -22,7 +23,7 @@ module.exports = {
             let member = guild.member( msg.author );
             let nickname = member ? member.displayName : null;
 
-            let place = (args[0] === 'afk') ? 0 : parseInt( args[0] );
+            let place = flagUtils.afkFunc( args[0] ) ? 0 : parseInt( args[0] );
             let newData = new flagUtils.FlagUser( msg.author.id, nickname,
                                                   now, place, 0, "" );
 
@@ -32,9 +33,9 @@ module.exports = {
                     // Check that the timestamp is within the 15min
                     if (newData.getLastUpdatedTs() - rowUser.lastupdatedts >
                             (EDIT_FLAG_RECORD_TIME_LIMIT_MINUTES * 60 * 1000)) {
-                        msg.channel.send( `You cannot edit your rankings anytime after ` +
-                        `${EDIT_FLAG_RECORD_TIME_LIMIT_MINUTES} minutes since your last ` +
-                        `ranking placement input.` );
+                        msg.channel.send( `Sorry, you can\'t edit your rankings anytime ` +
+                        `after ${EDIT_FLAG_RECORD_TIME_LIMIT_MINUTES} minutes since your ` +
+                        `last ranking placement input.` );
                         return;
                     }
                 
