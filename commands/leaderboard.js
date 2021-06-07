@@ -3,6 +3,7 @@
  * @brief Leaderboard command configs
  */
 const flagUtils = require( '../utils/flag-utils.js' );
+const TOP_X_RANKINGS_DISPLAY = 15;
 
 const readCb = (flagRecords, msg, userData) => {
     // Grab points and sort to determine rankings (handles ties as well)
@@ -30,7 +31,8 @@ const readCb = (flagRecords, msg, userData) => {
 
     let i = 0;
     for (const row of flagRecords) {
-        if (i >= 10) {
+        // Display top rankings only
+        if (i >= TOP_X_RANKINGS_DISPLAY) {
             break;
         }
 
@@ -43,7 +45,7 @@ const readCb = (flagRecords, msg, userData) => {
 
 module.exports = {
     name: 'leaderboard',
-    description: 'Returns the current top 10 flag leaderboard.',
+    description: `Returns the current top ${TOP_X_RANKINGS_DISPLAY} flag leaderboard.`,
     aliases: ['rankings', 'l', 'leader'],
     usage: ' ',
     guildOnly: true,
