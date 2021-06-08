@@ -9,11 +9,11 @@ const flagRoleId = process.env.flagRoleId;
 
 // List out flag race times
 const FlagReminders = new Map();
-FlagReminders.set( '12pm short flag; remember to wear snowshoes!', { hr: 11, min: 55 });
-FlagReminders.set( '7pm short flag; remember to wear snowshoes!', { hr: 18, min: 55 });
-FlagReminders.set( '9pm long flag; snowshoes are optional~', { hr: 20, min: 55 });
-FlagReminders.set( '10pm long flag; snowshoes are optional~', { hr: 21, min: 55 });
-FlagReminders.set( '11pm long flag; snowshoes are optional~', { hr: 22, min: 55 });
+FlagReminders.set( '12pm UTC long flag; snowshoes are optional~!', { hr: 11, min: 55 });
+FlagReminders.set( '7pm UTC short flag; remember to wear snowshoes!', { hr: 18, min: 55 });
+FlagReminders.set( '9pm UTC long flag; snowshoes are optional~', { hr: 20, min: 55 });
+FlagReminders.set( '10pm UTC long flag; snowshoes are optional~', { hr: 21, min: 55 });
+FlagReminders.set( '11pm UTC long flag; snowshoes are optional~', { hr: 22, min: 55 });
 
 /**
  * @brief Creates the CRON job to send reminders
