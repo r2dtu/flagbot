@@ -121,10 +121,15 @@ const calculateFlagPoints = ( rank ) => {
 
 const getCurrDateStr = () => {
     let now = Date.now();
+    console.log( now );
     let curr = new Date( now );
+    console.log( curr );
 
     let first = curr.getDate() - curr.getDay();
+    console.log( first );
+    console.log( curr.getDay() );
     let firstDay = new Date( curr.setDate( first ) ).toUTCString();
+    console.log( firstDay );
 
     return firstDay.split( " " ).slice( 0, 4 ).join( " " );
 };
@@ -136,7 +141,6 @@ const getCurrDateStr = () => {
  */
 const findUser = ( userData, cb ) => {
     let dateStr = getCurrDateStr();
-    console.log( dateStr );
     try {
         // userid is a unique field (primary key), will only be one
         pgClient.query( "SELECT * FROM flag_records.delight_flag " +
@@ -200,7 +204,6 @@ const parseFlagRecordsFile = ( recordType, msg, newData, callback ) => {
     try {
         if (recordType == RecordTypeEnum.WEEKLY) {
             let dateStr = getCurrDateStr();
-            console.log( dateStr );
             pgClient.query(
                 "SELECT * FROM flag_records.delight_flag WHERE week = $1",
                 [dateStr], (err, res) => {
