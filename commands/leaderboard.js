@@ -53,7 +53,8 @@ module.exports = {
     guildOnly: true,
     execute( msg, args ) {
 
-        if (!flagUtils.parseFlagRecordsFile( msg, null, readCb )) {
+        if (!flagUtils.parseFlagRecordsFile( flagUtils.RecordTypeEnum.WEEKLY,
+                                             msg, null, readCb )) {
             msg.channel.send( 'There are currently no rankings to display.' );
         } else {
             // readCb will be called

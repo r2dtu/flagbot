@@ -2,6 +2,12 @@
  * @file flag-utils.js
  * @brief Flag race utility functions
  */
+const RecordTypeEnum = {
+    "WEEKLY" : 1,
+    "MONTHLY" : 2,
+    "ALLTIME" : 3
+};
+Object.freeze( RecordTypeEnum );
 
 // Connect to Postgres
 const pg = require( 'pg' ).Client;
@@ -113,15 +119,28 @@ const calculateFlagPoints = ( rank ) => {
     return pts;
 };
 
+const getCurrDateStr = () => {
+    let now = Date.now();
+    let curr = new Date( now );
+
+    let first = curr.getDate() - curr.getDay();
+    let firstDay = new Date( curr.setDate( first ) ).toUTCString();
+
+    return firstDay.split( " " ).slice( 0, 4 ).join( " " );
+};
+
 /**
  * @brief Returns the user's flag records if exists, null otherwise
  *
  * @param[in] userId user discord ID
  */
 const findUser = ( userData, cb ) => {
+    let dateStr = getCurrDateStr();
     try {
         // userid is a unique field (primary key), will only be one
-        pgClient.query( "SELECT * FROM flag_records.delight_flag WHERE userid = $1", [userData.getUserId()])
+        pgClient.query( "SELECT * FROM flag_records.delight_flag " +
+                        "WHERE userid = $1 AND week = $2",
+                        [userData.getUserId(), dateStr])
             .then( (res) => {
                 console.log( res );
                 cb( res.rows );
@@ -142,18 +161,25 @@ const findUser = ( userData, cb ) => {
 var headerNames = ['timestamp', 'userId', 'nickname', 'weeklyPoints', 'weeklyPlacements'];
 const writeFlagData = ( guildId, userData ) => {
     let writeCb = (rows) => {
+        let dateStr = getCurrDateStr();
         if (rows.length > 0) {
             pgClient.query( 
-                "UPDATE flag_records.delight_flag SET lastUpdatedTs = $1, nickname = $2, weeklyPoints = $3, weeklyPlacements = $4 WHERE userId = $5",
-                [userData.getLastUpdatedTs(), userData.getNickname(), userData.getWeeklyPoints(), userData.getWeeklyPlacements(), userData.getUserId()] )
+                "UPDATE flag_records.delight_flag SET " +
+                "lastUpdatedTs = $1, nickname = $2, weeklyPoints = $3, " +
+                "weeklyPlacements = $4 " +
+                "WHERE userId = $5 AND week = $6",
+                [userData.getLastUpdatedTs(), userData.getNickname(), 
+                 userData.getWeeklyPoints(), userData.getWeeklyPlacements(), 
+                 userData.getUserId(), dateStr] )
                 .then( () => { } );
         } else {
             pgClient.query( 
                 "INSERT INTO flag_records.delight_flag " +
-                "(userId, lastUpdatedTs, nickname, weeklyPoints, weeklyPlacements) VALUES " +
-                "($1, $2, $3, $4, $5)",
-                [userData.getUserId(), userData.getLastUpdatedTs(), userData.getNickname(), 
-                 userData.getWeeklyPoints(), userData.getWeeklyPlacements()] )
+                "(userId, lastUpdatedTs, nickname, weeklyPoints, weeklyPlacements, week) VALUES " +
+                "($1, $2, $3, $4, $5, $6)",
+                [userData.getUserId(), userData.getLastUpdatedTs(),
+                 userData.getNickname(), userData.getWeeklyPoints(),
+                 userData.getWeeklyPlacements(), dateStr] )
                 .then( () => { } );
         }
     };
@@ -167,17 +193,26 @@ const writeFlagData = ( guildId, userData ) => {
  * @param[in] newData New flag user data to record
  * @param[in] callback Read callback
  */
-const parseFlagRecordsFile = ( msg, newData, callback ) => {
+const parseFlagRecordsFile = ( recordType, msg, newData, callback ) => {
     let flagRecords = [];
 
     try {
-        pgClient.query('SELECT * FROM flag_records.delight_flag', (err, res) => {
-            if (err) throw err;
-            for (let row of res.rows) {
-                flagRecords.push( row );
-            }
-            callback( flagRecords, msg, newData );
-        });
+        if (recordType == WEEKLY) {
+            let dateStr = getCurrDateStr();
+            pgClient.query(
+                "SELECT * FROM flag_records.delight_flag WHERE week = $1",
+                [dateStr] )
+                .then(err, res) => {
+                    if (err) throw err;
+                    for (let row of res.rows) {
+                        flagRecords.push( row );
+                    }
+                    callback( flagRecords, msg, newData );
+                });
+        }
+        else {
+            console.log( "Non-weekly rankings not yet implemented." );
+        }
 
         return true;
     } catch (e) {
@@ -186,4 +221,6 @@ const parseFlagRecordsFile = ( msg, newData, callback ) => {
     }
 };
 
-module.exports = { FlagUser, validFlagTime, findUser, isValidRanking, calculateFlagPoints, writeFlagData, parseFlagRecordsFile, afkFunc };
+module.exports = { FlagUser, validFlagTime, findUser, isValidRanking,
+                   calculateFlagPoints, writeFlagData, parseFlagRecordsFile,
+                   afkFunc, RecordTypeEnum };
