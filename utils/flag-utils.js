@@ -119,17 +119,16 @@ const calculateFlagPoints = ( rank ) => {
     return pts;
 };
 
-const getCurrDateStr = () => {
+/**
+ * @brief Returns the weekly start date in UTC.
+ */
+const getWeekStartDateStr = () => {
     let now = Date.now();
-    console.log( now );
     let curr = new Date( now );
-    console.log( curr );
 
-    let first = curr.getDate() - curr.getDay();
-    console.log( first );
-    console.log( curr.getDay() );
+    // Get the "first" day of the weekly reset, which is Monday UTC
+    let first = curr.getDate() - curr.getDay() + 1;
     let firstDay = new Date( curr.setDate( first ) ).toUTCString();
-    console.log( firstDay );
 
     return firstDay.split( " " ).slice( 0, 4 ).join( " " );
 };
@@ -140,7 +139,7 @@ const getCurrDateStr = () => {
  * @param[in] userId user discord ID
  */
 const findUser = ( userData, cb ) => {
-    let dateStr = getCurrDateStr();
+    let dateStr = getWeekStartDateStr();
     try {
         // userid is a unique field (primary key), will only be one
         pgClient.query( "SELECT * FROM flag_records.delight_flag " +
@@ -166,7 +165,7 @@ const findUser = ( userData, cb ) => {
 var headerNames = ['timestamp', 'userId', 'nickname', 'weeklyPoints', 'weeklyPlacements'];
 const writeFlagData = ( guildId, userData ) => {
     let writeCb = (rows) => {
-        let dateStr = getCurrDateStr();
+        let dateStr = getWeekStartDateStr();
         if (rows.length > 0) {
             pgClient.query( 
                 "UPDATE flag_records.delight_flag SET " +
@@ -203,7 +202,7 @@ const parseFlagRecordsFile = ( recordType, msg, newData, callback ) => {
 
     try {
         if (recordType == RecordTypeEnum.WEEKLY) {
-            let dateStr = getCurrDateStr();
+            let dateStr = getWeekStartDateStr();
             pgClient.query(
                 "SELECT * FROM flag_records.delight_flag WHERE week = $1",
                 [dateStr], (err, res) => {
