@@ -201,8 +201,7 @@ const parseFlagRecordsFile = ( recordType, msg, newData, callback ) => {
             let dateStr = getCurrDateStr();
             pgClient.query(
                 "SELECT * FROM flag_records.delight_flag WHERE week = $1",
-                [dateStr] )
-                .then( (err, res) => {
+                [dateStr], (err, res) => {
                     if (err) throw err;
                     for (let row of res.rows) {
                         flagRecords.push( row );
