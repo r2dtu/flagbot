@@ -202,13 +202,13 @@ const parseFlagRecordsFile = ( recordType, msg, newData, callback ) => {
             pgClient.query(
                 "SELECT * FROM flag_records.delight_flag WHERE week = $1",
                 [dateStr] )
-                .then(err, res) => {
+                .then( (err, res) => {
                     if (err) throw err;
                     for (let row of res.rows) {
                         flagRecords.push( row );
                     }
                     callback( flagRecords, msg, newData );
-                });
+                } );
         }
         else {
             console.log( "Non-weekly rankings not yet implemented." );
