@@ -197,7 +197,7 @@ const parseFlagRecordsFile = ( recordType, msg, newData, callback ) => {
     let flagRecords = [];
 
     try {
-        if (recordType == WEEKLY) {
+        if (recordType == RecordTypeEnum.WEEKLY) {
             let dateStr = getCurrDateStr();
             pgClient.query(
                 "SELECT * FROM flag_records.delight_flag WHERE week = $1",
