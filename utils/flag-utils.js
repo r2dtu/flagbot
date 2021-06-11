@@ -136,6 +136,7 @@ const getCurrDateStr = () => {
  */
 const findUser = ( userData, cb ) => {
     let dateStr = getCurrDateStr();
+    console.log( dateStr );
     try {
         // userid is a unique field (primary key), will only be one
         pgClient.query( "SELECT * FROM flag_records.delight_flag " +
@@ -199,6 +200,7 @@ const parseFlagRecordsFile = ( recordType, msg, newData, callback ) => {
     try {
         if (recordType == RecordTypeEnum.WEEKLY) {
             let dateStr = getCurrDateStr();
+            console.log( dateStr );
             pgClient.query(
                 "SELECT * FROM flag_records.delight_flag WHERE week = $1",
                 [dateStr], (err, res) => {
