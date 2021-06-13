@@ -210,6 +210,8 @@ const parseFlagRecordsFile = ( recordType, msg, newData, callback ) => {
                     for (let row of res.rows) {
                         flagRecords.push( row );
                     }
+                    console.log( flagRecords );
+                    console.log( dateStr );
                     callback( flagRecords, msg, newData );
                 } );
         }
