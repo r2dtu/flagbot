@@ -128,7 +128,12 @@ const getWeekStartDateStr = () => {
 
     // Get the "first" day of the weekly reset, which is Monday UTC
     let first = curr.getDate() - curr.getDay() + 1;
+
+    console.log( curr.getDate() );
+    console.log( curr.getDay() );
     let firstDay = new Date( curr.setDate( first ) ).toUTCString();
+
+    console.log( firstDay );
 
     return firstDay.split( " " ).slice( 0, 4 ).join( " " );
 };
@@ -210,8 +215,6 @@ const parseFlagRecordsFile = ( recordType, msg, newData, callback ) => {
                     for (let row of res.rows) {
                         flagRecords.push( row );
                     }
-                    console.log( flagRecords );
-                    console.log( dateStr );
                     callback( flagRecords, msg, newData );
                 } );
         }
