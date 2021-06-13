@@ -123,7 +123,7 @@ const calculateFlagPoints = ( rank ) => {
  * @brief Returns the adjusted day value (due to weeks starting on Monday
  *        instead of Sunday).
  */
-let getAdjustedDay() = (day) => {
+const getAdjustedDay = (day) => {
     if (day == 0) {
         return 7; // Sunday needs to be 7 instead of 0
     }
