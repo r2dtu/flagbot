@@ -125,7 +125,7 @@ const calculateFlagPoints = ( rank ) => {
  */
 const getAdjustedDay = (day) => {
     if (day == 0) {
-        return 7; // Sunday needs to be 7 instead of 0
+        return 0; // Sunday needs to be 7 instead of 0
     }
     return day;
 };
@@ -139,12 +139,7 @@ const getWeekStartDateStr = () => {
 
     // Get the "first" day of the weekly reset, which is Monday UTC
     let first = curr.getDate() - getAdjustedDay( curr.getDay() ) + 1;
-
-    console.log( curr.getDate() );
-    console.log( curr.getDay() );
     let firstDay = new Date( curr.setDate( first ) ).toUTCString();
-
-    console.log( firstDay );
 
     return firstDay.split( " " ).slice( 0, 4 ).join( " " );
 };
