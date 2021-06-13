@@ -125,7 +125,7 @@ const calculateFlagPoints = ( rank ) => {
  */
 const getAdjustedDay = (day) => {
     if (day == 0) {
-        return 0; // Sunday needs to be 7 instead of 0
+        return 7; // Sunday needs to be 7 instead of 0
     }
     return day;
 };
