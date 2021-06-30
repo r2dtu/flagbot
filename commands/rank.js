@@ -24,7 +24,8 @@ const compileWeeklyRankings = ( flagRecords, userid ) => {
     let idx = 0;
     for (const row of flagRecords) {
         if (row.userid === userid) {
-            resp.push( `**Name:** ${row.nickname}` );
+            let week = flagUtils.getWeekStartDateStr();
+            resp.push( `**Week ${week} Ranking Stats for ${row.nickname}**` );
             resp.push( `**Weekly Guild Rank:** ${ranks[idx]}` );
             resp.push( `**Weekly Points:** ${row.weeklypoints}` );
             let placeStr = row.weeklyplacements.replace(/\//g, ', ');
@@ -123,7 +124,7 @@ module.exports = {
     name: 'rank',
     description: 'Returns your current flag rank and points.',
     aliases: ['r'],
-    usage: ' ',
+    usage: ' [-w | -m | -a]',
     guildOnly: true,
     execute( msg, args ) {
 

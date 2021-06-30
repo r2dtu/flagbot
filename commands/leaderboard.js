@@ -48,13 +48,13 @@ const compileWeeklyRankings = ( flagRecords ) => {
 
 const compileMonthlyRankings = ( flagRecords ) => {
     let data = [];
-    data.push( "NOT IMPLEMENTED YET" );
+    data.push( "Implementation in progress..." );
     return data;
 };
 
 const compileAllTimeRankings = ( flagRecords ) => {
     let data = [];
-    data.push( "NOT IMPLEMENTED YET" );
+    data.push( "Implementation in progress..." );
     return data;
 };
 
@@ -62,7 +62,7 @@ module.exports = {
     name: 'leaderboard',
     description: `Returns the current top ${TOP_X_RANKINGS_DISPLAY} flag leaderboard.`,
     aliases: ['rankings', 'l', 'leader'],
-    usage: ' [-w] [-m] [-a]',
+    usage: ' [-w | -m | -a]',
     guildOnly: true,
     execute( msg, args ) {
 
