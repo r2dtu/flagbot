@@ -5,7 +5,7 @@
 const flagUtils = require( '../utils/flag-utils.js' );
 const TOP_X_RANKINGS_DISPLAY = 15;
 
-const readCb = (flagRecords, msg, userData) => {
+const compileWeeklyRankings = ( flagRecords ) => {
     // Grab points and sort to determine rankings (handles ties as well)
     let places = flagRecords.map( p => p.weeklypoints );
     let sorted = places.slice().sort( function (a, b) {
@@ -42,19 +42,57 @@ const readCb = (flagRecords, msg, userData) => {
         data.push( `${ranks[i]}. ${row.nickname} - ${row.weeklypoints} points` );
         ++i;
     }
-    msg.channel.send( data, { split: true } );
+
+    return data;
 }
+
+const compileMonthlyRankings = ( flagRecords ) => {
+    let data = [];
+    data.push( "NOT IMPLEMENTED YET" );
+    return data;
+};
+
+const compileAllTimeRankings = ( flagRecords ) => {
+    let data = [];
+    data.push( "NOT IMPLEMENTED YET" );
+    return data;
+};
 
 module.exports = {
     name: 'leaderboard',
     description: `Returns the current top ${TOP_X_RANKINGS_DISPLAY} flag leaderboard.`,
     aliases: ['rankings', 'l', 'leader'],
-    usage: ' ',
+    usage: ' [-w] [-m] [-a]',
     guildOnly: true,
     execute( msg, args ) {
 
-        if (!flagUtils.parseFlagRecordsFile( flagUtils.RecordTypeEnum.WEEKLY,
-                                             msg, null, readCb )) {
+        let recordType = flagUtils.getRecordType( args[0] );
+        let readCb = ( flagRecords, msg, userData ) => {
+
+            let data = [];
+            switch (recordType) {
+                case flagUtils.RecordTypeEnum.WEEKLY:
+                    data = compileWeeklyRankings( flagRecords );
+                    break;
+                case flagUtils.RecordTypeEnum.MONTHLY:
+                    data = compileMonthlyRankings( flagRecords );
+                    break;
+                case flagUtils.RecordTypeEnum.ALLTIME:
+                    data = compileAllTimeRankings( flagRecords );
+                    break;
+                default:
+                    // Should not have gotten here
+                    break;
+            }
+
+            msg.channel.send( data, { split: true } );
+        };
+
+        if (recordType === RecordTypeEnum.INVALID) {
+            msg.channel.send( 'Valid ranking types are: weekly (-w), ' +
+                              ' monthly (-m), or all-time (-a)' );
+        } else if (!flagUtils.getFlagRecords( recordType, msg, 
+                                              null, readCb )) {
             msg.channel.send( 'There are currently no rankings to display.' );
         } else {
             // readCb will be called

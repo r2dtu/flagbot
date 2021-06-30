@@ -2,13 +2,6 @@
  * @file flag-utils.js
  * @brief Flag race utility functions
  */
-const RecordTypeEnum = {
-    "WEEKLY" : 1,
-    "MONTHLY" : 2,
-    "ALLTIME" : 3
-};
-Object.freeze( RecordTypeEnum );
-
 // Connect to Postgres
 const pg = require( 'pg' ).Client;
 const pgClient = new pg({
@@ -18,6 +11,35 @@ const pgClient = new pg({
     }
 });
 pgClient.connect();
+
+// Record types
+const RecordTypeEnum = {
+    "INVALID" : 0,
+    "WEEKLY" : 1,
+    "MONTHLY" : 2,
+    "ALLTIME" : 3
+};
+Object.freeze( RecordTypeEnum );
+
+/**
+ * @brief Parses the record type passed in by user.
+ *
+ * @param[in] type Type of rankings the user wants to see
+ */
+let getRecordType = ( type ) => {
+    let retVal = RecordTypeEnum.INVALID;
+    if (type === null || type === '' || type === '-w' || type === '-weekly') {
+        retVal = flagUtils.RecordTypeEnum.WEEKLY;
+    } else if (type === '-m' || type === '-monthly') {
+        retVal = flagUtils.RecordTypeEnum.MONTHLY;
+    } else if (type === '-a' || type === '-all-time') {
+        retVal = flagUtils.RecordTypeEnum.ALLTIME;
+    } else { 
+        // Invalid type
+        console.log( "Invalid record type." );
+    }
+    return retVal;
+};
 
 /**
  * @brief String comparison functions.
@@ -208,12 +230,12 @@ const writeFlagData = ( guildId, userData ) => {
  * @param[in] newData New flag user data to record
  * @param[in] callback Read callback
  */
-const parseFlagRecordsFile = ( recordType, msg, newData, callback ) => {
+const getFlagRecords = ( recordType, msg, newData, callback ) => {
     let flagRecords = [];
 
     try {
+        let dateStr = getWeekStartDateStr();
         if (recordType == RecordTypeEnum.WEEKLY) {
-            let dateStr = getWeekStartDateStr();
             pgClient.query(
                 "SELECT * FROM flag_records.delight_flag WHERE week = $1",
                 [dateStr], (err, res) => {
@@ -223,9 +245,26 @@ const parseFlagRecordsFile = ( recordType, msg, newData, callback ) => {
                     }
                     callback( flagRecords, msg, newData );
                 } );
-        }
-        else {
-            console.log( "Non-weekly rankings not yet implemented." );
+        } else if (recordType == RecordTypeEnum.MONTHLY) {
+            pgClient.query(
+                "SELECT * FROM flag_records.delight_flag WHERE week like $1 order by lastupdatedts",
+                ['%' + dateStr.split( " " )[2] + '%'], (err, res) => {
+                    if (err) throw err;
+                    for (let row of res.rows) {
+                        flagRecords.push( row );
+                    }
+                    callback( flagRecords, msg, newData );
+                } );
+        } else {
+            pgClient.query(
+                "SELECT * FROM flag_records.delight_flag order by lastupdatedts",
+                (err, res) => {
+                    if (err) throw err;
+                    for (let row of res.rows) {
+                        flagRecords.push( row );
+                    }
+                    callback( flagRecords, msg, newData );
+                } );
         }
 
         return true;
@@ -236,5 +275,5 @@ const parseFlagRecordsFile = ( recordType, msg, newData, callback ) => {
 };
 
 module.exports = { FlagUser, validFlagTime, findUser, isValidRanking,
-                   calculateFlagPoints, writeFlagData, parseFlagRecordsFile,
-                   afkFunc, RecordTypeEnum };
+                   calculateFlagPoints, writeFlagData, getFlagRecords,
+                   afkFunc, RecordTypeEnum, getRecordType, getWeekStartDateStr };
