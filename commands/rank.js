@@ -25,7 +25,7 @@ const compileWeeklyRankings = ( flagRecords, userid ) => {
     for (const row of flagRecords) {
         if (row.userid === userid) {
             let week = flagUtils.getWeekStartDateStr();
-            resp.push( `**Week ${week} Ranking Stats for ${row.nickname}**` );
+            resp.push( `__Week of **${week}** Stats for **${row.nickname}**__` );
             resp.push( `**Weekly Guild Rank:** ${ranks[idx]}` );
             resp.push( `**Weekly Points:** ${row.weeklypoints}` );
             let placeStr = row.weeklyplacements.replace(/\//g, ', ');

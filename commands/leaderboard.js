@@ -26,7 +26,7 @@ const compileWeeklyRankings = ( flagRecords ) => {
     let data = [];
     let totalPoints = places.reduce((a, b) => a + b, 0);
 
-    data.push( `**Ranking Data for Top ${TOP_X_RANKINGS_DISPLAY} Delight Flaggers!**` );
+    data.push( `__**Ranking Data for Top ${TOP_X_RANKINGS_DISPLAY} Delight Flaggers!**__` );
     data.push( `**Total** (recorded) Guild Weekly Flag Points: ${totalPoints}` );
     data.push( `Total # of flaggers (recorded) this week: ${ranks.length}` );
     data.push( '\nRank. Name(IGN) - Weekly Points' );
