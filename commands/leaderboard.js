@@ -88,7 +88,7 @@ module.exports = {
             msg.channel.send( data, { split: true } );
         };
 
-        if (recordType === RecordTypeEnum.INVALID) {
+        if (recordType === flagUtils.RecordTypeEnum.INVALID) {
             msg.channel.send( 'Valid ranking types are: weekly (-w), ' +
                               ' monthly (-m), or all-time (-a)' );
         } else if (!flagUtils.getFlagRecords( recordType, msg, 
