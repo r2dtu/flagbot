@@ -27,7 +27,8 @@ Object.freeze( RecordTypeEnum );
  * @param[in] type Type of rankings the user wants to see
  */
 let getRecordType = ( type ) => {
-    let retVal = RecordTypeEnum.INVALID;
+        console.log( type );
+    let retVal = flagUtils.RecordTypeEnum.INVALID;
     if (type === null || type === '' || type === '-w' || type === '-weekly') {
         retVal = flagUtils.RecordTypeEnum.WEEKLY;
     } else if (type === '-m' || type === '-monthly') {
