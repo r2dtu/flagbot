@@ -13,11 +13,11 @@ const pgClient = new pg({
 pgClient.connect();
 
 // Record types
-const enum RecordTypeEnum = {
-    "INVALID" : 0,
-    "WEEKLY" : 1,
-    "MONTHLY" : 2,
-    "ALLTIME" : 3
+const RecordTypeEnum = {
+    INVALID : 0,
+    WEEKLY : 1,
+    MONTHLY : 2,
+    ALLTIME : 3
 };
 Object.freeze( RecordTypeEnum );
 
