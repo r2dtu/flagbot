@@ -28,13 +28,13 @@ Object.freeze( RecordTypeEnum );
  */
 let getRecordType = ( type ) => {
         console.log( type );
-    let retVal = flagUtils.RecordTypeEnum.INVALID;
+    let retVal = RecordTypeEnum.INVALID;
     if (type === null || type === '' || type === '-w' || type === '-weekly') {
-        retVal = flagUtils.RecordTypeEnum.WEEKLY;
+        retVal = RecordTypeEnum.WEEKLY;
     } else if (type === '-m' || type === '-monthly') {
-        retVal = flagUtils.RecordTypeEnum.MONTHLY;
+        retVal = RecordTypeEnum.MONTHLY;
     } else if (type === '-a' || type === '-all-time') {
-        retVal = flagUtils.RecordTypeEnum.ALLTIME;
+        retVal = RecordTypeEnum.ALLTIME;
     } else { 
         // Invalid type
         console.log( "Invalid record type." );
