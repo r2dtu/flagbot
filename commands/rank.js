@@ -205,11 +205,10 @@ const compileMonthlyRankings = ( flagRecords, userid, pfpUrl ) => {
         let chartUrl = createChartUrl( placements );
 
         // color =  14076078 or 0xD6C8AE
-        // can also .setAuthor(), .setFooter(), .setURL()
+        // can also .setDescription(), .setAuthor(), .setFooter(), .setURL()
         const embed = new Discord.MessageEmbed()
                   .setTitle( `__**${currMonth} Ranking Stats for ${nickname}**__` )
                   .setColor( 0x00AE86 )
-                  .setDescription( `Check the monthly leaderboard to see your rank.` )
                   .setThumbnail( pfpUrl )
                   .setImage( chartUrl )
                   .setTimestamp()
