@@ -67,7 +67,7 @@ const createChartUrl = ( placements ) => {
               },
               doughnutlabel: {
                 labels: [{
-                  text: placements.length,
+                  text: data.length,
                   font: {
                     size: 20,
                     weight: 'bold'
@@ -230,7 +230,7 @@ const compileMonthlyRankings = ( flagRecords, userid, pfpUrl ) => {
                       })
                   .addFields(
                       {
-                          name: "Median rank placement",
+                          name: "Median flag placement",
                           value: `${medianRank}`,
                           inline: true
                       })
