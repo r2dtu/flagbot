@@ -21,9 +21,11 @@ const createChartUrl = ( placements ) => {
     rankLabels.sort( function (a, b) { return a - b; } );
     rankLabels = utils.arrayRotate( rankLabels );
 
-    // Replace '0' label with 'afk/out'
-    rankLabels.pop();
-    rankLabels.push( 'afk/out' );
+    // Replace '0' label with 'afk/out' if exists
+    if (rankLabels[0] === '0') {
+        rankLabels.pop();
+        rankLabels.push( 'afk/out' );
+    }
 
     let counts = {};
     placements = placements.map( Number );
