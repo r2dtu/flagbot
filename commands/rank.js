@@ -198,7 +198,7 @@ const compileMonthlyRankings = ( flagRecords, userid, pfpUrl ) => {
         let placements = data.reduce( (a, b) => a + '/' + (b['placements'] || 0), 0 ).split( '/' );
 
         // Can do actual median (handle even length'd array), but lazy
-        let medianRank = placements[ (placements.length / 2) ];
+        let medianRank = placements[ Math.floor( placements.length / 2 ) ];
         let avgPpr = (totalPts / totalRaces).toFixed( 2 );
 
         // Create the chart
@@ -289,7 +289,7 @@ const compileAllTimeRankings = ( flagRecords, userid, pfpUrl ) => {
 //        let placements = data.reduce( (a, b) => a + '/' + (b['placements'] || 0), 0 ).split( '/' );
 //
 //        // Can do actual median (handle even length'd array), but lazy
-//        let medianRank = placements[ (placements.length / 2) ];
+//        let medianRank = placements[ Math.floor( placements.length / 2 ) ];
 //        let avgPpr = (totalPts / totalRaces).toFixed( 2 );
 //
 //        // Create the chart
@@ -348,7 +348,7 @@ module.exports = {
     name: 'rank',
     description: 'Returns your current flag rank and points.',
     aliases: ['r'],
-    usage: ' [-w | -m | -a]',
+    usage: ' [-w | --weekly | -m | --monthly | -a | --all-time]',
     guildOnly: true,
     execute( msg, args ) {
 
