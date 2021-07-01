@@ -2,6 +2,7 @@
  * @file leaderboard.js
  * @brief Leaderboard command configs
  */
+const Discord = require( 'discord.js' );
 const flagUtils = require( '../utils/flag-utils.js' );
 const TOP_X_RANKINGS_DISPLAY = 15;
 
