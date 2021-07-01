@@ -22,9 +22,14 @@ const createChartUrl = ( placements ) => {
     rankLabels = utils.arrayRotate( rankLabels );
 
     // Replace '0' label with 'afk/out' if exists
+    let rotate = false;
+    console.log( 'Labels: ' + rankLabels );
     if (rankLabels[0] === '0') {
-        rankLabels.pop();
+        rankLabels.shift();
         rankLabels.push( 'afk/out' );
+
+        console.log( rankLabels) ;
+        rotate = true;
     }
 
     let counts = {};
@@ -44,7 +49,10 @@ const createChartUrl = ( placements ) => {
     for (const key in counts) {
         data.push( counts[key] );
     }
-    data = utils.arrayRotate( data );
+    // Rotate only if there's afk/outs
+    if (rotate) {
+        data = utils.arrayRotate( data );
+    }
 
     const chart = new qchart();
     chart.setConfig(
