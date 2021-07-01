@@ -67,7 +67,7 @@ const createChartUrl = ( placements ) => {
               },
               doughnutlabel: {
                 labels: [{
-                  text: data.length,
+                  text: sum( data ),
                   font: {
                     size: 20,
                     weight: 'bold'
