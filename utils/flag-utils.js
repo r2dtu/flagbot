@@ -12,6 +12,7 @@ const pgClient = new pg({
 });
 pgClient.connect();
 
+
 // Record types
 const RecordTypeEnum = {
     INVALID : 0,
@@ -28,11 +29,11 @@ Object.freeze( RecordTypeEnum );
  */
 let getRecordType = ( type ) => {
     let retVal = RecordTypeEnum.INVALID;
-    if (!type || type === '-w' || type === '-weekly') {
+    if (!type || type === '-w' || type === '--weekly') {
         retVal = RecordTypeEnum.WEEKLY;
-    } else if (type === '-m' || type === '-monthly') {
+    } else if (type === '-m' || type === '--monthly') {
         retVal = RecordTypeEnum.MONTHLY;
-    } else if (type === '-a' || type === '-all-time') {
+    } else if (type === '-a' || type === '--all-time') {
         retVal = RecordTypeEnum.ALLTIME;
     } else { 
         // Invalid type
@@ -179,7 +180,6 @@ const findUser = ( userData, cb ) => {
                         "WHERE userid = $1 AND week = $2",
                         [userData.getUserId(), dateStr])
             .then( (res) => {
-                console.log( res );
                 cb( res.rows );
             } );
     } catch (e) {
