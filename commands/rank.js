@@ -196,6 +196,7 @@ const compileMonthlyRankings = ( flagRecords, userid, pfpUrl ) => {
         let totalPts = data.reduce( (a, b) => a + (b['pts'] || 0), 0 );
         let totalRaces = data.reduce( (a, b) => a + (b['numRaces'] || 0), 0 );
         let placements = data.reduce( (a, b) => a + '/' + (b['placements'] || 0), 0 ).split( '/' );
+        placements.shift();
 
         // Can do actual median (handle even length'd array), but lazy
         let medianRank = placements[ Math.floor( placements.length / 2 ) ];
