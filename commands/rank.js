@@ -18,17 +18,14 @@ const utils = require( '../utils/utils.js' );
 const createChartUrl = ( placements ) => {
 
     let rankLabels = [...new Set( placements )].map( Number )
-    console.log( rankLabels );
     rankLabels.sort( function (a, b) { return a - b; } );
-    console.log( rankLabels );
 
     // Replace '0' label with 'afk/out' if exists
     let rotate = false;
-    if (rankLabels[0] === '0') {
+    if (rankLabels[0] === 0) {
         rankLabels.shift();
         rankLabels.push( 'afk/out' );
         rotate = true;
-        console.log( rankLabels );
     }
 
     let counts = {};
