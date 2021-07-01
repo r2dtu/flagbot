@@ -34,7 +34,7 @@ const compileWeeklyRankings = ( flagRecords ) => {
         }
 
         // Handle ties
-        leaderboardStr += `${ranks[i]}. ${row.nickname} - ${row.weeklypoints} points\n` );
+        leaderboardStr += `${ranks[i]}. ${row.nickname} - ${row.weeklypoints} points\n`;
         ++i;
     }
 
