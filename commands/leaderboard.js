@@ -23,13 +23,8 @@ const compileWeeklyRankings = ( flagRecords ) => {
         return y - x;
     } );
 
-    let data = [];
     let totalPoints = places.reduce((a, b) => a + b, 0);
-
-    data.push( `__**Ranking Data for Top ${TOP_X_RANKINGS_DISPLAY} Delight Flaggers!**__` );
-    data.push( `**Total** (recorded) Guild Weekly Flag Points: ${totalPoints}` );
-    data.push( `Total # of flaggers (recorded) this week: ${ranks.length}` );
-    data.push( '\nRank. Name(IGN) - Weekly Points' );
+    let leaderboardStr = "";
 
     let i = 0;
     for (const row of flagRecords) {
@@ -39,11 +34,25 @@ const compileWeeklyRankings = ( flagRecords ) => {
         }
 
         // Handle ties
-        data.push( `${ranks[i]}. ${row.nickname} - ${row.weeklypoints} points` );
+        leaderboardStr += `${ranks[i]}. ${row.nickname} - ${row.weeklypoints} points\n` );
         ++i;
     }
 
-    return data;
+    const embed = new Discord.MessageEmbed()
+          .setTitle( `__**Ranking Data for Top ${TOP_X_RANKINGS_DISPLAY} Delight Flaggers!**__` )
+          .setColor( 16329785 )
+          .setDescription( `**Total** (recorded) Guild Weekly Flag Points: ${totalPoints}\n` +
+                           `Total # of flaggers (recorded) this week: ${ranks.length}` )
+          .setTimestamp()
+          .addFields(
+              {
+                  name: "Rank. Name(IGN) - Weekly Points",
+                  value: leaderboardStr,
+              });
+
+    resp = { embed: embed };
+
+    return resp;
 }
 
 const compileMonthlyRankings = ( flagRecords ) => {
@@ -85,7 +94,7 @@ module.exports = {
                     break;
             }
 
-            msg.channel.send( data, { split: true } );
+            msg.channel.send( data );
         };
 
         if (recordType === flagUtils.RecordTypeEnum.INVALID) {
