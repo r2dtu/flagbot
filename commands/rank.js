@@ -204,12 +204,13 @@ const compileMonthlyRankings = ( flagRecords, userid, pfpUrl ) => {
         let placements = data.reduce( (a, b) => a + '/' + (b['placements'] || 0), 0 ).split( '/' );
         placements.shift();
 
-        // Can do actual median (handle even length'd array), but lazy
-        let medianRank = placements[ Math.floor( placements.length / 2 ) ];
-        let avgPpr = (totalPts / totalRaces).toFixed( 2 );
-
         // Create the chart
         let chartUrl = createChartUrl( placements );
+
+        // Can do actual median (handle even length'd array), but lazy
+        placements.sort();
+        let medianRank = placements[ Math.floor( placements.length / 2 ) ];
+        let avgPpr = (totalPts / totalRaces).toFixed( 2 );
 
         // color =  14076078 or 0xD6C8AE
         // can also .setDescription(), .setAuthor(), .setFooter(), .setURL()
