@@ -7,7 +7,7 @@ const flagUtils = require( '../utils/flag-utils.js' );
 const utils = require( '../utils/utils.js' );
 
 const TOP_X_RANKINGS_DISPLAY = 15;
-const TOP_X_RANKINGS_DISPLAY_ALLTIME = 20;
+const TOP_X_RANKINGS_DISPLAY_ALLTIME = 15;
 
 const compileWeeklyRankings = ( flagRecords, guildIcon ) => {
     // Grab points and sort to determine rankings (handles ties as well)
@@ -99,15 +99,16 @@ const compileMonthlyRankings = ( flagRecords, guildIcon ) => {
     let currMonth = tmp[2] + ' ' + tmp[3];
 
     const embed = new Discord.MessageEmbed()
-          .setTitle( `__**${currMonth} Leaderboard for Top ${TOP_X_RANKINGS_DISPLAY} Flaggers!**__` )
+          .setTitle( `__**${currMonth} Leaderboard for Top ${TOP_X_RANKINGS_DISPLAY_ALLTIME} Flaggers!**__` )
           .setColor( 16329785 )
-          .setDescription( `**Total** (recorded) Guild Weekly Flag Points: ${totalPoints}\n` +
-                           `Total # of flaggers (recorded) this week: ${data.length}` )
+          .setDescription( `**Total** (recorded) Guild Flag Points: ${totalPoints}\n` +
+                           `Total # of flaggers (recorded) this month: ${data.length}` )
           .setTimestamp()
           .setThumbnail( guildIcon )
+          .setFooter( "Note: The current month is given by the month of the start date of the current week.", "" )
           .addFields(
               {
-                  name: "Rank. Name(IGN) - Weekly Points",
+                  name: "Rank. Name(IGN) - Points Earned in ${currMonth}",
                   value: leaderboardStr,
               });
 
