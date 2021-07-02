@@ -108,7 +108,7 @@ const compileMonthlyRankings = ( flagRecords, guildIcon ) => {
           .setFooter( "Note: The current month is given by the month of the start date of the current week.", "" )
           .addFields(
               {
-                  name: "Rank. Name(IGN) - Points Earned in ${currMonth}",
+                  name: `Rank. Name(IGN) - Points Earned in ${currMonth}`,
                   value: leaderboardStr,
               });
 
