@@ -4,7 +4,10 @@
  */
 const Discord = require( 'discord.js' );
 const flagUtils = require( '../utils/flag-utils.js' );
+const utils = require( '../utils/utils.js' );
+
 const TOP_X_RANKINGS_DISPLAY = 15;
+const TOP_X_RANKINGS_DISPLAY_ALLTIME = 20;
 
 const compileWeeklyRankings = ( flagRecords, guildIcon ) => {
     // Grab points and sort to determine rankings (handles ties as well)
@@ -57,15 +60,64 @@ const compileWeeklyRankings = ( flagRecords, guildIcon ) => {
     return resp;
 }
 
-const compileMonthlyRankings = ( flagRecords ) => {
-    let data = [];
-    data.push( "Implementation in progress..." );
-    return data;
+const compileMonthlyRankings = ( flagRecords, guildIcon ) => {
+
+    // Combine all data into objects for each flagger
+    const combinedData = flagRecords.reduce( (r, e) => {
+	if (!r[e.userid]) r[e.userid] = e;
+        else r[e.userid].weeklypoints = r[e.userid].weeklypoints + e.weeklypoints;
+        return r;
+    }, {} );
+
+    // Convert JSON into array of flagger objects
+    let data = Object.values( combinedData );
+
+    // Get top N
+    let topN = utils.getTopN( data, 'weeklypoints', TOP_X_RANKINGS_DISPLAY_ALLTIME );
+
+    // Grab points and sort to determine rankings (handles ties as well)
+    let places = topN.map( p => p.weeklypoints );
+    let sorted = places.slice().sort( function (a, b) {
+                     return b - a;
+                 } );
+    let ranks = places.map( function( v ) {
+                    return sorted.indexOf( v ) + 1;
+                } );
+    ranks.sort( function (a, b) { return a - b; } );
+
+    let totalPoints = places.reduce((a, b) => a + b, 0);
+    let leaderboardStr = "";
+
+    let i = 0;
+    for (const row of topN) {
+        leaderboardStr += `${ranks[i]}. ${row.nickname} - ${row.weeklypoints} points\n`;
+        ++i;
+    }
+
+    // Get current month
+    let tmp = flagUtils.getWeekStartDateStr().split( " " );
+    let currMonth = tmp[2] + ' ' + tmp[3];
+
+    const embed = new Discord.MessageEmbed()
+          .setTitle( `__**${currMonth} Leaderboard for Top ${TOP_X_RANKINGS_DISPLAY} Flaggers!**__` )
+          .setColor( 16329785 )
+          .setDescription( `**Total** (recorded) Guild Weekly Flag Points: ${totalPoints}\n` +
+                           `Total # of flaggers (recorded) this week: ${data.length}` )
+          .setTimestamp()
+          .setThumbnail( guildIcon )
+          .addFields(
+              {
+                  name: "Rank. Name(IGN) - Weekly Points",
+                  value: leaderboardStr,
+              });
+
+    let resp = { embed: embed };
+    return resp;
 };
 
-const compileAllTimeRankings = ( flagRecords ) => {
+const compileAllTimeRankings = ( flagRecords, guildIcon ) => {
     let data = [];
-    data.push( "Implementation in progress..." );
+    data.push( "Not yet implemented..." );
     return data;
 };
 
