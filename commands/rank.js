@@ -230,7 +230,7 @@ const compileMonthlyRankings = ( flagRecords, userid, pfpUrl ) => {
         // color =  14076078 or 0xD6C8AE
         // can also .setDescription(), .setAuthor(), .setFooter(), .setURL()
         const embed = new Discord.MessageEmbed()
-                  .setTitle( `__**${currMonth} Ranking Stats for ${nickname}**__` )
+                  .setTitle( `__**${currMonth} Flag Stats for ${nickname}**__` )
                   .setColor( 0x00AE86 )
                   .setThumbnail( pfpUrl )
                   .setImage( chartUrl )
@@ -336,7 +336,7 @@ const compileAllTimeRankings = ( flagRecords, userid, pfpUrl ) => {
         // color =  14076078 or 0xD6C8AE
         // can also .setAuthor(), .setFooter(), .setURL()
         const embed = new Discord.MessageEmbed()
-                  .setTitle( `__**All-time Ranking Stats for ${nickname}**__` )
+                  .setTitle( `__**All-time Flag Stats for ${nickname}**__` )
                   .setColor( 0xD6C8AE )
                   .setThumbnail( pfpUrl )
                   .setImage( chartUrl )
