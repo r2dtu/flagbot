@@ -13,14 +13,19 @@ const qchart = require( 'quickchart-js' );
 const utils = require( '../utils/utils.js' );
 
 /**
- * Generates a donut graph of a user's flag placements.
+ * @brief Generates a donut graph of a user's flag placements.
+ *
+ * @param[in] placements array of strings containing flagger's placements
+ *
+ * @return QuickChart URL to display in embed message
  */
 const createChartUrl = ( placements ) => {
 
+    // Create the labels for graph
     let rankLabels = [...new Set( placements )].map( Number )
     rankLabels.sort( function (a, b) { return a - b; } );
 
-    // Replace '0' label with 'afk/out' if exists
+    // Replace '0' label with 'afk/out' if exists, and move to end
     let rotate = false;
     if (rankLabels[0] === 0) {
         rankLabels.shift();
@@ -28,19 +33,21 @@ const createChartUrl = ( placements ) => {
         rotate = true;
     }
 
+    // Count # of each placement
     let counts = {};
     placements = placements.map( Number );
     placements.sort(
-            function (a, b) {
-                return a - b;
-            }
+        function (a, b) {
+            return a - b;
+        }
     );
     placements.forEach(
-            function (x) {
-                counts[x] = (counts[x] || 0) + 1;
-            }
-        );
+        function (x) {
+            counts[x] = (counts[x] || 0) + 1;
+        }
+    );
 
+    // Store counts in an array
     let data = [];
     for (const key in counts) {
         data.push( counts[key] );
@@ -49,7 +56,9 @@ const createChartUrl = ( placements ) => {
     if (rotate) {
         data = utils.arrayRotate( data );
     }
+    // Now labels/data should map 1:1
 
+    // Create donut chart
     const chart = new qchart();
     chart.setConfig(
         {
@@ -95,6 +104,7 @@ const createChartUrl = ( placements ) => {
  *
  * @param[in] flagRecords flag data from database
  * @param[in] userid user ID to get data about
+ * @param[in] pfpUrl Profile picture URL
  *
  * @return bot response
  */
@@ -145,7 +155,6 @@ const compileWeeklyRankings = ( flagRecords, userid, pfpUrl ) => {
 
             resp = { embed: embed };
             break;
-
         } else {
             // Continue searching
             idx += 1;
@@ -166,6 +175,7 @@ const compileWeeklyRankings = ( flagRecords, userid, pfpUrl ) => {
  *
  * @param[in] flagRecords flag data from database
  * @param[in] userid user ID to get data about
+ * @param[in] pfpUrl Profile picture URL
  *
  * @return bot response
  */
@@ -184,7 +194,8 @@ const compileMonthlyRankings = ( flagRecords, userid, pfpUrl ) => {
 //                         'rank': row.endofweekrank,
                          'pts': row.weeklypoints,
                          'numRaces': row.weeklyplacements.split( "/" ).length,
-                         'placements': row.weeklyplacements
+                         'placements': row.weeklyplacements,
+                         'week': row.week,
                        } );
             nickname = row.nickname;
         }
@@ -202,6 +213,7 @@ const compileMonthlyRankings = ( flagRecords, userid, pfpUrl ) => {
         let totalPts = data.reduce( (a, b) => a + (b['pts'] || 0), 0 );
         let totalRaces = data.reduce( (a, b) => a + (b['numRaces'] || 0), 0 );
         let placements = data.reduce( (a, b) => a + '/' + (b['placements'] || 0), 0 ).split( '/' );
+        // Get rid of prepended '0'
         placements.shift();
 
         // Create the chart
@@ -211,6 +223,9 @@ const compileMonthlyRankings = ( flagRecords, userid, pfpUrl ) => {
         placements.sort();
         let medianRank = placements[ Math.floor( placements.length / 2 ) ];
         let avgPpr = (totalPts / totalRaces).toFixed( 2 );
+
+        // Grab week with highest points
+        let bestWeek = utils.getTopN( data, 'pts', 1 );
 
         // color =  14076078 or 0xD6C8AE
         // can also .setDescription(), .setAuthor(), .setFooter(), .setURL()
@@ -227,7 +242,7 @@ const compileMonthlyRankings = ( flagRecords, userid, pfpUrl ) => {
                       })
                   .addFields(
                       {
-                          name: "Number of recorded races",
+                          name: "Number of (recorded) races",
                           value: `${totalRaces}`
                       })
                   .addFields(
@@ -251,13 +266,13 @@ const compileMonthlyRankings = ( flagRecords, userid, pfpUrl ) => {
                   .addFields(
                       {
                           name: "Best week of flag",
-                          value: `TBD`,
+                          value: `${bestWeek[0].week}`,
                           inline: true
                       })
                   .addFields(
                       {
                           name: "Points earned during best week",
-                          value: `TBD`,
+                          value: `${bestWeek[0].pts}`,
                           inline: true
                       });
 
@@ -267,93 +282,117 @@ const compileMonthlyRankings = ( flagRecords, userid, pfpUrl ) => {
     return resp;
 };
 
+/**
+ * @brief Creates a bot response for all-time ranking data.
+ *
+ * @param[in] flagRecords flag data from database
+ * @param[in] userid user ID to get data about
+ * @param[in] pfpUrl Profile picture URL
+ *
+ * @return bot response
+ */
 const compileAllTimeRankings = ( flagRecords, userid, pfpUrl ) => {
 
     let nickname = "";
     let data = [];
     let resp = [];
 
-//    // Combine all data into single entity for each flagger
-//    let found = false;
-//    for (const row of flagRecords) {
-//        if (row.userid === userid) {
-//            found = true;
-//            data.push( { 
-//                         'pts': row.weeklypoints,
-//                         'numRaces': row.weeklyplacements.split( "/" ).length
-//                       } );
-//            nickname = row.nickname;
-//        }
-//    }
-//
-//    if (!found) {
-//        resp.push( 'No ranking data found for you.' );
-//    } else {
-//
-//        // Calculate stats
-//        let totalPts = data.reduce( (a, b) => a + (b['pts'] || 0), 0 );
-//        let totalRaces = data.reduce( (a, b) => a + (b['numRaces'] || 0), 0 );
-//        let placements = data.reduce( (a, b) => a + '/' + (b['placements'] || 0), 0 ).split( '/' );
-//
-//        // Can do actual median (handle even length'd array), but lazy
-//        let medianRank = placements[ Math.floor( placements.length / 2 ) ];
-//        let avgPpr = (totalPts / totalRaces).toFixed( 2 );
-//
-//        // Create the chart
-//        let chartUrl = createChartUrl( placements );
-//
-//        // color =  14076078 or 0xD6C8AE
-//        // can also .setAuthor(), .setFooter(), .setURL()
-//        const embed = new Discord.MessageEmbed()
-//                  .setTitle( `__**All-time Ranking Stats for ${nickname}**__` )
-//                  .setColor( 0x00AE86 )
-//                  .setThumbnail( pfpUrl )
-//                  .setImage( chartUrl )
-//                  .setTimestamp()
-//                  .addFields(
-//                      {
-//                          name: "Total points recorded",
-//                          value: `${totalPts}`
-//                      })
-//                  .addFields(
-//                      {
-//                          name: "Number of recorded races",
-//                          value: `${totalRaces}`
-//                      })
-//                  .addFields(
-//                      {
-//                          name: "Average points per race",
-//                          value: `${avgPpr}`,
-//                          inline: true
-//                      })
-//                  .addFields(
-//                      {
-//                          name: "Median rank placement",
-//                          value: `${medianRank}`,
-//                          inline: true
-//                      })
-//                  .addFields(
-//                      {
-//                          name: "Best week of flag",
-//                          value: `${avgPpr}`,
-//                          inline: true
-//                      })
-//                  .addFields(
-//                      {
-//                          name: "Most weekly points earned in flag",
-//                          value: `${avgPpr}`,
-//                          inline: true
-//                      });
-//
-//        resp = { embed: embed };
-//    }
-    resp.push( "Not yet implemented" );
+    // Combine all data into single entity for each flagger
+    let found = false;
+    for (const row of flagRecords) {
+        if (row.userid === userid) {
+            found = true;
+            data.push( {
+                         'pts': row.weeklypoints,
+                         'numRaces': row.weeklyplacements.split( "/" ).length,
+                         'placements': row.weeklyplacements,
+                         'week': row.week,
+                       } );
+            nickname = row.nickname;
+        }
+    }
+
+    if (!found) {
+        resp.push( 'No ranking data found for you.' );
+    } else {
+
+        // Calculate stats
+        let totalPts = data.reduce( (a, b) => a + (b['pts'] || 0), 0 );
+        let totalRaces = data.reduce( (a, b) => a + (b['numRaces'] || 0), 0 );
+        let placements = data.reduce( (a, b) => a + '/' + (b['placements'] || 0), 0 ).split( '/' );
+        placements.shift();
+
+        // Create the chart
+        let chartUrl = createChartUrl( placements );
+
+        // Can do actual median (handle even length'd array), but lazy
+        placements.sort();
+        let medianRank = placements[ Math.floor( placements.length / 2 ) ];
+        let avgPpr = (totalPts / totalRaces).toFixed( 2 );
+
+        // Grab week with highest points
+        let bestWeek = utils.getTopN( data, 'pts', 1 );
+
+        // color =  14076078 or 0xD6C8AE
+        // can also .setAuthor(), .setFooter(), .setURL()
+        const embed = new Discord.MessageEmbed()
+                  .setTitle( `__**All-time Ranking Stats for ${nickname}**__` )
+                  .setColor( 0xD6C8AE )
+                  .setThumbnail( pfpUrl )
+                  .setImage( chartUrl )
+                  .setTimestamp()
+                  .addFields(
+                      {
+                          name: "Total points recorded",
+                          value: `${totalPts}`
+                      })
+                  .addFields(
+                      {
+                          name: "Number of recorded races",
+                          value: `${totalRaces}`
+                      })
+                  .addFields(
+                      {
+                          name: "Average points per race",
+                          value: `${avgPpr}`,
+                          inline: true
+                      })
+                  .addFields(
+                      {
+                          name: "Median rank placement",
+                          value: `${medianRank}`,
+                          inline: true
+                      })
+                  .addFields(
+                      {
+                          name: '\u200b',
+                          value: '\u200b',
+                          inline: true
+                      })
+                  .addFields(
+                      {
+                          name: "Best week of flag",
+                          value: `${bestWeek[0].week}`,
+                          inline: true
+                      })
+                  .addFields(
+                      {
+                          name: "Most weekly points earned in flag",
+                          value: `${bestWeek[0].pts}`,
+                          inline: true
+                      });
+
+        resp = { embed: embed };
+    }
+
     return resp;
 };
 
 module.exports = {
     name: 'rank',
-    description: 'Returns your current flag rank and points.',
+    description: 'Returns your current flag rank, points, and other stats. Note that ' +
+                 'all-time rankings will take much longer to fetch than weekly or ' +
+                 'monthly.',
     aliases: ['r'],
     usage: ' [-w | --weekly | -m | --monthly | -a | --all-time]',
     guildOnly: true,

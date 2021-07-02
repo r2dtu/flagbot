@@ -6,7 +6,7 @@ const Discord = require( 'discord.js' );
 const flagUtils = require( '../utils/flag-utils.js' );
 const TOP_X_RANKINGS_DISPLAY = 15;
 
-const compileWeeklyRankings = ( flagRecords ) => {
+const compileWeeklyRankings = ( flagRecords, guildIcon ) => {
     // Grab points and sort to determine rankings (handles ties as well)
     let places = flagRecords.map( p => p.weeklypoints );
     let sorted = places.slice().sort( function (a, b) {
@@ -45,6 +45,7 @@ const compileWeeklyRankings = ( flagRecords ) => {
           .setDescription( `**Total** (recorded) Guild Weekly Flag Points: ${totalPoints}\n` +
                            `Total # of flaggers (recorded) this week: ${ranks.length}` )
           .setTimestamp()
+          .setThumbnail( guildIcon )
           .addFields(
               {
                   name: "Rank. Name(IGN) - Weekly Points",
@@ -70,9 +71,11 @@ const compileAllTimeRankings = ( flagRecords ) => {
 
 module.exports = {
     name: 'leaderboard',
-    description: `Returns the current top ${TOP_X_RANKINGS_DISPLAY} flag leaderboard.`,
+    description: `Returns the current top ${TOP_X_RANKINGS_DISPLAY} flag leaderboard.` + 
+                 ` Note that monthly/all-time leaderboards will take much longer` +
+                 ` to calculate.`,
     aliases: ['rankings', 'l', 'leader'],
-    usage: ' [-w | -m | -a]',
+    usage: ' [-w | --weekly | -m | --monthly | -a | --all-time]',
     guildOnly: true,
     execute( msg, args ) {
 
@@ -82,13 +85,13 @@ module.exports = {
             let data = [];
             switch (recordType) {
                 case flagUtils.RecordTypeEnum.WEEKLY:
-                    data = compileWeeklyRankings( flagRecords );
+                    data = compileWeeklyRankings( flagRecords, msg.guild.iconURL() );
                     break;
                 case flagUtils.RecordTypeEnum.MONTHLY:
-                    data = compileMonthlyRankings( flagRecords );
+                    data = compileMonthlyRankings( flagRecords, msg.guild.iconURL() );
                     break;
                 case flagUtils.RecordTypeEnum.ALLTIME:
-                    data = compileAllTimeRankings( flagRecords );
+                    data = compileAllTimeRankings( flagRecords, msg.guild.iconURL() );
                     break;
                 default:
                     // Should not have gotten here
