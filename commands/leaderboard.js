@@ -42,6 +42,10 @@ const compileWeeklyRankings = ( flagRecords, guildIcon ) => {
         ++i;
     }
 
+    if (0 === leaderboardStr.length) {
+        leaderboardStr = "No data to display. Use -prev for previous week's rankings.";
+    }
+
     const embed = new Discord.MessageEmbed()
           .setTitle( `__**Ranking Data for Top ${TOP_X_RANKINGS_DISPLAY} Delight Flaggers!**__` )
           .setColor( 16329785 )
@@ -128,7 +132,7 @@ module.exports = {
                  ` Note that monthly/all-time leaderboards will take much longer` +
                  ` to calculate.`,
     aliases: ['rankings', 'l', 'leader'],
-    usage: ' [-w | --weekly | -m | --monthly | -a | --all-time]',
+    usage: ' [-w | --weekly | -prev | -m | --monthly | -a | --all-time]',
     guildOnly: true,
     execute( msg, args ) {
 
@@ -154,11 +158,13 @@ module.exports = {
             msg.channel.send( data );
         };
 
+        let prevWeek = (args[0] === "-prev");
+
         if (recordType === flagUtils.RecordTypeEnum.INVALID) {
             msg.channel.send( 'Valid ranking types are: weekly (-w), ' +
                               ' monthly (-m), or all-time (-a)' );
         } else if (!flagUtils.getFlagRecords( recordType, msg, 
-                                              null, readCb )) {
+                                              null, readCb, prevWeek )) {
             msg.channel.send( 'There are currently no rankings to display.' );
         } else {
             // readCb will be called

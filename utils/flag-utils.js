@@ -12,7 +12,6 @@ const pgClient = new pg({
 });
 pgClient.connect();
 
-
 // Record types
 const RecordTypeEnum = {
     INVALID : 0,
@@ -29,7 +28,7 @@ Object.freeze( RecordTypeEnum );
  */
 let getRecordType = ( type ) => {
     let retVal = RecordTypeEnum.INVALID;
-    if (!type || type === '-w' || type === '--weekly') {
+    if (!type || type === '-w' || type === '--weekly' || type === '-prev' ) {
         retVal = RecordTypeEnum.WEEKLY;
     } else if (type === '-m' || type === '--monthly') {
         retVal = RecordTypeEnum.MONTHLY;
@@ -168,6 +167,20 @@ const getWeekStartDateStr = () => {
 };
 
 /**
+ * @brief Returns the previous weekly start date in UTC.
+ */
+const getPrevWeekStartDateStr = () => {
+    let today = new Date();
+    let lastWeek = new Date( today.getFullYear(), today.getMonth(), today.getDate() - 7 );
+
+    // Get the "first" day of the weekly reset, which is Monday UTC
+    let first = lastWeek.getDate() - getAdjustedDay( lastWeek.getDay() ) + 1;
+    let firstDay = new Date( lastWeek.setDate( first ) ).toUTCString();
+
+    return firstDay.split( " " ).slice( 0, 4 ).join( " " );
+};
+
+/**
  * @brief Returns the user's flag records if exists, null otherwise
  *
  * @param[in] userId user discord ID
@@ -230,11 +243,16 @@ const writeFlagData = ( guildId, userData ) => {
  * @param[in] newData New flag user data to record
  * @param[in] callback Read callback
  */
-const getFlagRecords = ( recordType, msg, newData, callback ) => {
+const getFlagRecords = ( recordType, msg, newData, callback, prevWeek ) => {
     let flagRecords = [];
 
     try {
         let dateStr = getWeekStartDateStr();
+
+        if (prevWeek) {
+            dateStr = getPrevWeekStartDateStr();
+        }
+
         if (recordType == RecordTypeEnum.WEEKLY) {
             pgClient.query(
                 "SELECT * FROM flag_records.delight_flag WHERE week = $1",
