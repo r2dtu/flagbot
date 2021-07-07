@@ -129,7 +129,7 @@ const compileWeeklyRankings = ( flagRecords, userid, pfpUrl ) => {
             let placeStr = row.weeklyplacements.replace(/\//g, ', ');
 
             // Replace '0' with 'afk/out'
-            placeStr = placeStr.replace( /0/g, 'afk/out' );
+            placeStr = placeStr.replace( /, 0/g, ', afk/out' );
             found = true;
 
             const embed = new Discord.MessageEmbed()
