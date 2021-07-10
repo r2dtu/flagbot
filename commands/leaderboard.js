@@ -42,12 +42,12 @@ const compileWeeklyRankings = ( flagRecords, guildIcon ) => {
         ++i;
     }
 
-    // Get current month
+    // Get current week
     let currWeek = flagUtils.getWeekStartDateStr();
     if (0 === leaderboardStr.length) {
         leaderboardStr = "No data to display. Use -prevw for previous week's rankings.";
     } else {
-        currWeek = topN[0].week;
+        currWeek = flagRecords[0].week;
     }
 
     const embed = new Discord.MessageEmbed()
