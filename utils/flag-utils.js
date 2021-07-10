@@ -185,7 +185,7 @@ const getPrevWeekStartDateStr = () => {
  */
 const getPrevMonthStartDateStr = () => {
     let today = new Date();
-    let lastMonth = new Date( today.getFullYear(), today.getMonth() - 1, today.getDate() - 7 );
+    let lastMonth = new Date( today.getFullYear(), today.getMonth() - 1, today.getDate() );
 
     // Get the "first" day of the weekly reset, which is Monday UTC
     let first = lastMonth.getDate() - getAdjustedDay( lastMonth.getDay() ) + 1;

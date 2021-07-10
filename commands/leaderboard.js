@@ -98,6 +98,10 @@ const compileMonthlyRankings = ( flagRecords, guildIcon ) => {
         ++i;
     }
 
+    if (0 === leaderboardStr.length) {
+        leaderboardStr = "No data to display. Use -prevm for previous month's rankings.";
+    }
+
     // Get current month
     let tmp = flagUtils.getWeekStartDateStr().split( " " );
     let currMonth = tmp[2] + ' ' + tmp[3];
