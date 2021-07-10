@@ -132,7 +132,7 @@ module.exports = {
                  ` Note that monthly/all-time leaderboards will take much longer` +
                  ` to calculate.`,
     aliases: ['rankings', 'l', 'leader'],
-    usage: ' [-w | --weekly | -prev | -m | --monthly | -a | --all-time]',
+    usage: ' [-w | --weekly | -prevw | -m | --monthly | -prevm | -a | --all-time]',
     guildOnly: true,
     execute( msg, args ) {
 
@@ -158,13 +158,13 @@ module.exports = {
             msg.channel.send( data );
         };
 
-        let prevWeek = (args[0] === "-prev");
+        let prev = (args[0] === "-prevw" || args[0] === "-prevm");
 
         if (recordType === flagUtils.RecordTypeEnum.INVALID) {
             msg.channel.send( 'Valid ranking types are: weekly (-w), ' +
                               ' monthly (-m), or all-time (-a)' );
         } else if (!flagUtils.getFlagRecords( recordType, msg, 
-                                              null, readCb, prevWeek )) {
+                                              null, readCb, prev )) {
             msg.channel.send( 'There are currently no rankings to display.' );
         } else {
             // readCb will be called

@@ -181,6 +181,20 @@ const getPrevWeekStartDateStr = () => {
 };
 
 /**
+ * @brief Returns the previous month's date in UTC.
+ */
+const getPrevMonthStartDateStr = () => {
+    let today = new Date();
+    let lastMonth = new Date( today.getFullYear(), today.getMonth() - 1, today.getDate() - 7 );
+
+    // Get the "first" day of the weekly reset, which is Monday UTC
+    let first = lastMonth.getDate() - getAdjustedDay( lastMonth.getDay() ) + 1;
+    let firstDay = new Date( lastMonth.setDate( first ) ).toUTCString();
+
+    return firstDay.split( " " ).slice( 0, 4 ).join( " " );
+};
+
+/**
  * @brief Returns the user's flag records if exists, null otherwise
  *
  * @param[in] userId user discord ID
@@ -208,7 +222,6 @@ const findUser = ( userData, cb ) => {
  * @param[in] guildId Discord server ID
  * @param[in] userData New flag user data to write
  */
-var headerNames = ['timestamp', 'userId', 'nickname', 'weeklyPoints', 'weeklyPlacements'];
 const writeFlagData = ( guildId, userData ) => {
     let writeCb = (rows) => {
         let dateStr = getWeekStartDateStr();
@@ -242,18 +255,19 @@ const writeFlagData = ( guildId, userData ) => {
  * @param[in] msg Message data
  * @param[in] newData New flag user data to record
  * @param[in] callback Read callback
+ * @param[in] prev true if previous week/month
  */
-const getFlagRecords = ( recordType, msg, newData, callback, prevWeek ) => {
+const getFlagRecords = ( recordType, msg, newData, callback, prev ) => {
     let flagRecords = [];
 
     try {
         let dateStr = getWeekStartDateStr();
 
-        if (prevWeek) {
-            dateStr = getPrevWeekStartDateStr();
-        }
-
         if (recordType == RecordTypeEnum.WEEKLY) {
+            if (prev) {
+                dateStr = getPrevWeekStartDateStr();
+            }
+
             pgClient.query(
                 "SELECT * FROM flag_records.delight_flag WHERE week = $1",
                 [dateStr], (err, res) => {
@@ -264,6 +278,9 @@ const getFlagRecords = ( recordType, msg, newData, callback, prevWeek ) => {
                     callback( flagRecords, msg, newData );
                 } );
         } else if (recordType == RecordTypeEnum.MONTHLY) {
+            if (prev) {
+                dateStr = getPrevMonthStartDateStr();
+            }
             pgClient.query(
                 "SELECT * FROM flag_records.delight_flag WHERE week like $1 order by lastupdatedts",
                 ['%' + dateStr.split( " " )[2] + '%'], (err, res) => {
