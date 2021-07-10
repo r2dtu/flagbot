@@ -42,12 +42,16 @@ const compileWeeklyRankings = ( flagRecords, guildIcon ) => {
         ++i;
     }
 
+    // Get current month
+    let currWeek = flagUtils.getWeekStartDateStr();
     if (0 === leaderboardStr.length) {
-        leaderboardStr = "No data to display. Use -prev for previous week's rankings.";
+        leaderboardStr = "No data to display. Use -prevw for previous week's rankings.";
+    } else {
+        currWeek = topN[0].week;
     }
 
     const embed = new Discord.MessageEmbed()
-          .setTitle( `__**Ranking Data for Top ${TOP_X_RANKINGS_DISPLAY} Delight Flaggers!**__` )
+          .setTitle( `__**Week of ${currWeek} Delight Flaggers Leaderboard**__` )
           .setColor( 16329785 )
           .setDescription( `**Total** (recorded) Guild Weekly Flag Points: ${totalPoints}\n` +
                            `Total # of flaggers (recorded) this week: ${ranks.length}` )
@@ -98,13 +102,15 @@ const compileMonthlyRankings = ( flagRecords, guildIcon ) => {
         ++i;
     }
 
-    if (0 === leaderboardStr.length) {
-        leaderboardStr = "No data to display. Use -prevm for previous month's rankings.";
-    }
-
     // Get current month
     let tmp = flagUtils.getWeekStartDateStr().split( " " );
     let currMonth = tmp[2] + ' ' + tmp[3];
+    if (0 === leaderboardStr.length) {
+        leaderboardStr = "No data to display. Use -prevm for previous month's rankings.";
+    } else {
+        tmp = topN[0].week.split( " " );
+        currMonth = tmp[2] + ' ' + tmp[3];
+    }
 
     const embed = new Discord.MessageEmbed()
           .setTitle( `__**${currMonth} Leaderboard for Top ${TOP_X_RANKINGS_DISPLAY_ALLTIME} Flaggers!**__` )
