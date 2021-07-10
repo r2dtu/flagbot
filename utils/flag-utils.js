@@ -28,9 +28,9 @@ Object.freeze( RecordTypeEnum );
  */
 let getRecordType = ( type ) => {
     let retVal = RecordTypeEnum.INVALID;
-    if (!type || type === '-w' || type === '--weekly' || type === '-prev' ) {
+    if (!type || type === '-w' || type === '--weekly' || type === '-prevw' ) {
         retVal = RecordTypeEnum.WEEKLY;
-    } else if (type === '-m' || type === '--monthly') {
+    } else if (type === '-m' || type === '--monthly' || type === '-prevm' ) {
         retVal = RecordTypeEnum.MONTHLY;
     } else if (type === '-a' || type === '--all-time') {
         retVal = RecordTypeEnum.ALLTIME;

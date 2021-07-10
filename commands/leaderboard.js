@@ -162,7 +162,8 @@ module.exports = {
 
         if (recordType === flagUtils.RecordTypeEnum.INVALID) {
             msg.channel.send( 'Valid ranking types are: weekly (-w), ' +
-                              ' monthly (-m), or all-time (-a)' );
+                              'monthly (-m), all-time (-a), previous week (-prevw), ' +
+                              'or previous month (-prevm).' );
         } else if (!flagUtils.getFlagRecords( recordType, msg, 
                                               null, readCb, prev )) {
             msg.channel.send( 'There are currently no rankings to display.' );
